@@ -80,6 +80,7 @@ Dessa forma, o sistema integra consulta de informações, identificação de res
 
 <a id="der"></a>
 ### 4.1 Diagrama Relacional - DER 
+<img width="869" height="509" alt="Captura de tela 2026-08-18 110358" src="https://github.com/user-attachments/assets/92d69a16-4fb6-4c2e-9bce-0367f83060c1" />
 
 <a id="script-banco"></a>
 ### 4.2 Repositório do Script de Banco de Dados
@@ -92,6 +93,7 @@ Dessa forma, o sistema integra consulta de informações, identificação de res
 
 <a id="wireframes"></a>
 ### 5.2 Wireframes
+<img width="848" height="802" alt="Captura de tela 2026-08-18 110608" src="https://github.com/user-attachments/assets/748b01c0-6eee-4924-bd63-55fb2746906f" />
 
 <a id="codigo-fonte"></a>
 ### 5.3 Repositório do Código Fonte
@@ -104,6 +106,16 @@ Dessa forma, o sistema integra consulta de informações, identificação de res
 
 <a id="casos-de-testes"></a>
 #### 5.5.1 Casos de Testes
+**Caso de Teste: CT-FUNC-04**
+
+| Campo | Descrição |
+|---|---|
+| **Título de Teste** | **Pesquisa Parcial de Produto** - Verificar se a busca encontra produtos utilizando apenas parte do nome. |
+| **Módulo** | Consulta de Resíduos |
+| **Pré-Condições** | Banco contendo o produto desejado (exemplo usando “Garrafa PET”). |
+| **Dados de Entrada** | **Barra de Pesquisa:** Garra |
+| **Passos de Execução** | **1.** Acessar a tela de busca de produtos.<br>**2.** Digitar um nome parcial (Garra).<br>**3.** Realizar a pesquisa. |
+| **Resultado Esperado** | O sistema deve retornar o resultado “Garrafa PET” na lista de resultados sem apresentar erros. |
 
 <a id="resultados"></a>
 ## 6. Resultados
@@ -121,4 +133,3 @@ Dessa forma, o sistema integra consulta de informações, identificação de res
 **Metodologia Ágil - O que é?** Disponível em: <https://www.alura.com.br/artigos/o-que-e-metodologia-agil>.
 
 **Metodologia ágil: o que é e como implementar**. Disponível em: <https://www.totvs.com/blog/negocios/metodologia-agil/>.
-
