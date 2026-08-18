@@ -1,4 +1,4 @@
-# Leafy
+# Leafy 🌿
 <img width="100" height="100" alt="ChatGPT Image 13 de ago  de 2026, 11_00_47" src="https://github.com/user-attachments/assets/3940561a-bef0-419d-b680-451aa7e4453d" />
 
 (RESUMO)
