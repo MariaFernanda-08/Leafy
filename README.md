@@ -37,6 +37,12 @@ A escolha do tema justifica-se pela necessidade de facilitar o acesso a informa�
 
 <a id="visao-geral"></a>
 ## 2. Visão Geral do Sistema
+O Leafy é um aplicativo Android desenvolvido para auxiliar os usuários no descarte adequado de resíduos, reunindo diferentes recursos em uma única plataforma. O sistema utiliza informações sobre os materiais e recursos de localização para orientar o usuário sobre como e onde realizar o descarte de seus resíduos.
+
+Entre suas principais funcionalidades, o Leafy permite que o usuário consulte produtos para obter informações sobre seu tipo de resíduo, reciclabilidade e instruções de descarte. O sistema também conta com um recurso de escaneamento de produtos, que possibilita a identificação do material e a consulta das informações correspondentes no banco de dados. Dessa forma, o usuário pode obter informações que auxiliem na identificação dos materiais e na compreensão das formas adequadas de descarte. Outra funcionalidade é o mapa interativo com pontos de descarte organizados de acordo com o tipo de resíduo. Por meio da geolocalização, o usuário pode visualizar locais próximos, consultar a distância até o ponto desejado e traçar rotas para facilitar seu deslocamento. O sistema também permite a utilização de filtros de acordo com o tipo de resíduo, facilitando a localização de pontos de coleta adequados.
+
+Além disso, o Leafy busca disponibilizar informações que auxiliem na identificação dos materiais e na compreensão das formas adequadas de descarte, contribuindo para a educação ambiental. O sistema disponibiliza conteúdos sobre reciclagem, como tipos de reciclagem, cores da coleta seletiva, dicas sustentáveis e curiosidades ambientais. Também possui recursos de acompanhamento do progresso do usuário, permitindo visualizar conquistas e tempo de uso da aplicação.
+Dessa forma, o sistema integra consulta de informações, identificação de resíduos, geolocalização e educação ambiental em uma aplicação voltada à orientação do usuário. Suas funcionalidades foram estruturadas para atender às necessidades identificadas no problema apresentado na introdução, oferecendo recursos que facilitam tanto a compreensão sobre os resíduos quanto a localização de locais apropriados para seu descarte.
 
 <a id="escopo"></a>
 ## 3. Escopo e Requisitos
