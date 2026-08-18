@@ -80,6 +80,16 @@ Dessa forma, o Leafy terá como foco principal fornecer informações sobre os r
 
 <a id="requisitos-nao-funcionais"></a>
 ### 3.4 Requisitos Não Funcionais
+| RNF Código | Descrição                                                                                                                                                                               | Prioridade  |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| **RNF-01** | O aplicativo deve apresentar uma interface simples, intuitiva e organizada, permitindo que o usuário navegue entre as funcionalidades de forma fácil.                                   | Obrigatório |
+| **RNF-02** | O aplicativo deve apresentar tempo de resposta adequado durante a utilização de suas principais funcionalidades, sem atrasos excessivos ou travamentos.                                 | Obrigatório |
+| **RNF-03** | O aplicativo deve funcionar de forma estável, evitando encerramentos inesperados e falhas durante sua utilização.                                                                       | Obrigatório |
+| **RNF-04** | O sistema deve proteger os dados dos usuários e restringir o acesso a informações que necessitem de autenticação.                                                                       | Obrigatório |
+| **RNF-05** | O sistema deve validar os dados recebidos antes de armazená-los no banco de dados, evitando o registro de informações inválidas.                                                        | Obrigatório |
+| **RNF-06** | O aplicativo deve solicitar e utilizar a permissão de localização do dispositivo de acordo com as configurações do usuário, sem comprometer o funcionamento das demais funcionalidades. | Obrigatório |
+| **RNF-07** | O sistema deve manter a integridade das informações armazenadas no banco de dados, evitando alterações ou perdas indevidas dos dados.                                                   | Obrigatório |
+| **RNF-08** | O código do sistema deve ser organizado de forma a facilitar sua manutenção, correção de erros e futuras atualizações.                                                                  | Desejável   |
 
 <a id ="modelo-dados"></a>
 ## 4. Modelo de Dados
