@@ -51,6 +51,12 @@ Dessa forma, o sistema integra consulta de informações, identificação de res
 <a id="escopo-projeto"></a>
 ### 3.1 Escopo do Projeto 
 
+O escopo do projeto compreende o desenvolvimento de um aplicativo Android voltado ao auxílio no descarte adequado de resíduos. O sistema terá como principais funcionalidades a consulta de informações sobre produtos e resíduos, a identificação de materiais por meio do escaneamento de produtos, a apresentação de instruções sobre o descarte adequado e a localização de pontos de coleta próximos ao usuário por meio de recursos de geolocalização.
+
+Também fará parte do sistema um mapa interativo com pontos de coleta organizados de acordo com o tipo de resíduo, permitindo ao usuário visualizar e identificar locais próximos. O aplicativo contará ainda com conteúdos educativos relacionados à reciclagem, incluindo informações sobre tipos de reciclagem, coleta seletiva, dicas sustentáveis e curiosidades ambientais. Além disso, será disponibilizado um sistema de acompanhamento do progresso do usuário, com recursos relacionados a conquistas e tempo de uso da aplicação. Ficam fora do escopo do projeto a realização física da coleta ou do transporte dos resíduos, a prestação de serviços de reciclagem, o gerenciamento dos estabelecimentos responsáveis pelos pontos de coleta e a realização de denúncias de descarte irregular. O aplicativo também não será responsável por realizar a coleta dos resíduos, garantir o funcionamento dos pontos de coleta cadastrados ou disponibilizar serviços de transporte até esses locais.
+
+Dessa forma, o Leafy terá como foco principal fornecer informações sobre os resíduos e facilitar a localização de pontos de coleta adequados, utilizando recursos de desenvolvimento de software e geolocalização para oferecer uma solução prática de orientação ao usuário.
+
 <a id="historia-usuarios"></a>
 ### 3.2 História de Usuário
 
