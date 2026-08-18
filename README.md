@@ -114,14 +114,11 @@ Dessa forma, o sistema integra consulta de informações, identificação de res
 <a id="referencias"></a>
 ## Referências
 
-O que é IDE (ambiente de desenvolvimento integrado). Disponível em: <https://www.redhat.com/pt-br/topics/platform-engineering/what-is-ide>.
+**O que é IDE (ambiente de desenvolvimento integrado)**. Disponível em: <https://www.redhat.com/pt-br/topics/platform-engineering/what-is-ide>.
 
+**JETBRAINS. Kotlin Programming Language**. Disponível em: <https://kotlinlang.org/>.
 
-JETBRAINS. Kotlin Programming Language. Disponível em: <https://kotlinlang.org/>.
+**Metodologia Ágil - O que é?** Disponível em: <https://www.alura.com.br/artigos/o-que-e-metodologia-agil>.
 
-
-Metodologia Ágil - O que é? Disponível em: <https://www.alura.com.br/artigos/o-que-e-metodologia-agil>.
-
-
-Metodologia ágil: o que é e como implementar. Disponível em: <https://www.totvs.com/blog/negocios/metodologia-agil/>.
+**Metodologia ágil: o que é e como implementar**. Disponível em: <https://www.totvs.com/blog/negocios/metodologia-agil/>.
 
