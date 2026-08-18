@@ -63,6 +63,13 @@ Dessa forma, o sistema integra consulta de informações, identificação de res
 
 <a id="requisitos-funcionais"></a>
 ### 3.3 Requisitos Funcionais
+| RF Código | Descrição | Prioridade | HU |
+|-----------|-----------|------------|----|
+| RF-01 | O sistema deve permitir o escaneamento de produtos e fornecer informações sobre seu tipo, reciclabilidade e instruções de descarte. | Obrigatório | HU-01 |
+| RF-02 | O sistema deve consultar o banco de dados para retornar informações sobre o produto pesquisado pelo usuário. | Obrigatório | HU-02 |
+| RF-03 | O sistema deve localizar e informar ao usuário sobre pontos de coleta mais próximos. | Obrigatório | HU-03 |
+| RF-04 | O sistema deve deixar disponível informações sobre a reciclagem a fim de educar o usuário. | Obrigatório | HU-04 |
+| RF-05 | O sistema deve exibir o progresso do usuário, incluindo tempo de uso e conquistas obtidas. | Desejável | HU-05 |
 
 <a id="requisitos-nao-funcionais"></a>
 ### 3.4 Requisitos Não Funcionais
