@@ -96,7 +96,7 @@ Dessa forma, o Leafy terá como foco principal fornecer informações sobre os r
 
 <a id="der"></a>
 ### 4.1 Diagrama Relacional - DER 
-<img width="869" height="509" alt="Captura de tela 2026-08-18 110358" src="https://github.com/user-attachments/assets/92d69a16-4fb6-4c2e-9bce-0367f83060c1" />
+<img width="760" height="480" alt="Captura de tela 2026-08-18 110358" src="https://github.com/user-attachments/assets/92d69a16-4fb6-4c2e-9bce-0367f83060c1" />
 
 <a id="script-banco"></a>
 ### 4.2 Repositório do Script de Banco de Dados
@@ -119,7 +119,7 @@ Essa organização permite separar a interface, a lógica de apresentação e o 
 
 <a id="wireframes"></a>
 ### 5.2 Wireframes
-<img width="848" height="802" alt="Captura de tela 2026-08-18 110608" src="https://github.com/user-attachments/assets/748b01c0-6eee-4924-bd63-55fb2746906f" />
+<img width="750" height="720" alt="Captura de tela 2026-08-18 110608" src="https://github.com/user-attachments/assets/748b01c0-6eee-4924-bd63-55fb2746906f" />
 
 <a id="codigo-fonte"></a>
 ### 5.3 Repositório do Código Fonte
