@@ -27,11 +27,13 @@
 
 <a id="introducao"></a>
 ## 1. Introdução
-O descarte incorreto de resíduos é um problema que pode causar impactos ambientais, como poluição, contaminação do solo e sobrecarga de aterros. Além disso, muitas pessoas ainda possuem dificuldades para identificar a forma correta de descartar determinados materiais e para encontrar locais apropriados para sua destinação. Nesse contexto, o uso da tecnologia pode contribuir para facilitar o acesso a informações e tornar práticas sustentáveis mais acessíveis no cotidiano. Como forma de contribuir para a solução desse problema, foi desenvolvido o aplicativo **Leafy**, que tem como objetivo auxiliar os usuários no descarte correto de resíduos por meio da integração entre informação, tecnologia e geolocalização. O aplicativo permite consultar informações sobre diferentes tipos de resíduos, identificar materiais e localizar pontos de coleta próximos ao usuário. 
+O descarte incorreto de resíduos é um problema que pode gerar impactos ambientais e sociais, principalmente quando as pessoas não possuem informações suficientes sobre a forma adequada de destinar diferentes tipos de materiais. Nesse contexto, a tecnologia pode ser utilizada como uma ferramenta para facilitar o acesso à informação e auxiliar na adoção de práticas mais sustentáveis.
 
-Entre suas principais funcionalidades, o Leafy apresenta um mapa interativo com pontos de descarte organizados de acordo com o tipo de resíduo, permitindo que o usuário visualize locais próximos, consulte sua distância e trace rotas até o ponto desejado. Além disso, o sistema busca disponibilizar informações que auxiliem na identificação dos materiais e na compreensão das formas adequadas de descarte, contribuindo também para a educação ambiental. Essas funcionalidades estão relacionadas aos requisitos definidos para o sistema, como o escaneamento de produtos, a consulta de informações e a localização de pontos de coleta.   
+Diante desse cenário, foi desenvolvido o aplicativo **Leafy**, com o objetivo de auxiliar os usuários no descarte correto de resíduos e facilitar o acesso a informações relacionadas à destinação adequada dos materiais. O projeto busca utilizar recursos da área de desenvolvimento de sistemas para aproximar a tecnologia de uma necessidade ambiental presente no cotidiano.
 
-Dessa forma, o projeto busca facilitar o acesso a informações sobre reciclagem e descarte, incentivando práticas mais sustentáveis e contribuindo para a redução do descarte inadequado de resíduos. A proposta mostra-se relevante tanto para a sociedade, ao oferecer uma ferramenta que auxilia nas decisões relacionadas ao descarte, quanto para a área de desenvolvimento de software, ao utilizar recursos tecnológicos para atender a uma necessidade ambiental e social.
+Como objetivo geral, o Leafy busca desenvolver uma solução que auxilie o usuário a identificar a forma adequada de descarte dos resíduos e a encontrar locais apropriados para sua destinação. Para alcançar esse objetivo, o sistema conta com recursos voltados à consulta e identificação de resíduos, localização de pontos de coleta e disponibilização de informações relacionadas à reciclagem.
+
+A escolha do tema justifica-se pela necessidade de facilitar o acesso a informações sobre o descarte adequado e incentivar práticas sustentáveis. Dessa forma, o projeto relaciona o desenvolvimento de software a uma questão ambiental e social, buscando oferecer uma solução prática para uma dificuldade presente no cotidiano.
 
 <a id="visao-geral"></a>
 ## 2. Visão Geral do Sistema
@@ -43,7 +45,15 @@ Dessa forma, o projeto busca facilitar o acesso a informações sobre reciclagem
 ### 3.1 Escopo do Projeto 
 
 <a id="historia-usuarios"></a>
-### 3.2 História de Usuários
+### 3.2 História de Usuário
+
+| HU Código | Descrição |
+|-----------|-----------|
+| HU-01 | Como usuário, quero escanear um produto para identificar seu tipo de material e saber se ele é reciclável. |
+| HU-02 | Como usuário, quero consultar informações sobre um produto para entender suas características. |
+| HU-03 | Como usuário, quero localizar pontos de coleta próximos para descartar corretamente. |
+| HU-04 | Como usuário, quero acessar informações sobre reciclagem para aprender boas práticas. |
+| HU-05 | Como usuário, quero acompanhar meu progresso no aplicativo para visualizar minhas conquistas e tempo de uso do aplicativo. |
 
 <a id="requisitos-funcionais"></a>
 ### 3.3 Requisitos Funcionais
