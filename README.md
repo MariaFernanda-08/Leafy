@@ -173,7 +173,7 @@ Dessa forma, o sistema integra consulta de informações, identificação de res
 | **Resultado Esperado** | O sistema pode apresentar lentidão ou indisponibilidade sob carga extrema, porém não deve perder dados, encerrar inesperadamente ou apresentar comportamento inconsistente. |
 
 
-**CT-PERF-04 - Testes de Desempenho, Carga e Estresse **
+**CT-PERF-04 - Testes de Desempenho, Carga e Estresse**
 | Campo | Descrição |
 |---|---|
 | **Título de Teste** | **Recuperação após Pico de Estresse** - Verificar a recuperação do desempenho normal após várias requisições. |
