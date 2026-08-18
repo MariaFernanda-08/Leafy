@@ -1,5 +1,5 @@
 # Leafy 🌿
-<img width="200" height="200" alt="logo-removebg-preview" src="https://github.com/user-attachments/assets/ce7ca9dd-d65b-4e65-939a-68ff7d188057" />
+<img width="150" height="150" alt="logo-removebg-preview" src="https://github.com/user-attachments/assets/ce7ca9dd-d65b-4e65-939a-68ff7d188057" />
 
 (RESUMO)
 
