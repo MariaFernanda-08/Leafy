@@ -106,6 +106,16 @@ Dessa forma, o Leafy terá como foco principal fornecer informações sobre os r
 
 <a id="padrao-arquitetural"></a>
 ### 5.1 Descrição do Padrão Arquitetural
+O Leafy utiliza uma arquitetura baseada no modelo **Cliente-Servidor**, na qual o aplicativo Android atua como cliente e se comunica com o servidor por meio de uma API para realizar consultas e enviar informações. O servidor é responsável pelo processamento das requisições e pela comunicação com o banco de dados, permitindo que as informações utilizadas pelo aplicativo sejam armazenadas e recuperadas de forma organizada.
+
+No desenvolvimento do aplicativo Android, é utilizado o padrão arquitetural **MVVM (Model-View-ViewModel)**, que separa as responsabilidades da aplicação em diferentes camadas. A **View** é responsável pela apresentação das telas e interação com o usuário, o **ViewModel** gerencia os dados e estados relacionados às telas, e o **Model** representa os dados e as operações necessárias para o funcionamento do sistema.
+
+Essa organização permite separar a interface, a lógica de apresentação e o acesso aos dados, facilitando a manutenção, a organização e a evolução do aplicativo. A arquitetura também possibilita que funcionalidades como consulta de resíduos, escaneamento de produtos e localização de pontos de coleta sejam integradas ao banco de dados e aos serviços utilizados pelo sistema.
+
+| **Perfil**        | **Descrição**                                                                                              | **Permissões Básicas**                                                                                                       |
+| ----------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Usuário**       | Usuário final que utiliza o aplicativo para obter informações sobre resíduos e localizar pontos de coleta. | Consultar resíduos, escanear produtos, visualizar pontos de coleta, acessar conteúdos educativos e acompanhar seu progresso. |
+| **Administrador** | Responsável pelo gerenciamento das informações e dos recursos administrativos do sistema.                  | Gerenciar informações de resíduos, pontos de coleta e usuários, curiosidades sobre reciclagem e meio ambiente, tudo conforme as permissões definidas no sistema.                 |
 
 <a id="wireframes"></a>
 ### 5.2 Wireframes
@@ -198,6 +208,7 @@ Dessa forma, o Leafy terá como foco principal fornecer informações sobre os r
 | **Dados de Entrada** | **Carga:** A mesma aplicada no **CT-PERF-03**. |
 | **Passos de Execução** | **1.** Submeter o sistema a uma carga elevada de requisições.<br>**2.** Encerrar o pico de carga.<br>**3.** Monitorar o tempo de resposta do sistema após a redução da carga.<br>**4.** Verificar se as funcionalidades voltam ao comportamento esperado. |
 | **Resultado Esperado** | Após o término do pico de carga, o sistema deve recuperar gradualmente seu desempenho normal, mantendo as funcionalidades disponíveis e sem perda de dados. |
+
 
 **CT-PERF-05 - Testes de Desempenho, Carga e Estresse**
 | Campo | Descrição |
