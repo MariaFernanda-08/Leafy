@@ -15,6 +15,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.leafy.mvvm.viewmodel.DetalhesResiduoViewModel
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun AppNavigation() {
@@ -56,13 +57,18 @@ fun AppNavigation() {
         ) { backStackEntry ->
             val residuoId = backStackEntry.arguments?.getInt("residuoId")
             val viewModel: DetalhesResiduoViewModel = viewModel()
-            if (residuoId != null){
-                val residuo = viewModel.buscarResiduo(residuoId)
-                if (residuo != null) {
-                    DetalhesResiduoScreen(
-                        residuo = residuo
-                    )
+
+            LaunchedEffect(residuoId) {
+                if (residuoId != null) {
+                    viewModel.buscarResiduo(residuoId)
                 }
+            }
+
+            val residuo = viewModel.residuo
+            if (residuo != null) {
+                DetalhesResiduoScreen(
+                    residuo = residuo
+                )
             }
         }
         composable("scanner") {
@@ -79,4 +85,3 @@ fun AppNavigation() {
         }
     }
 }
-
