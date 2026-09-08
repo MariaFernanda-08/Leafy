@@ -10,14 +10,18 @@ import com.example.leafy.mvvm.model.repository.ResiduoRepository
 import com.example.leafy.mvvm.remote.RetrofitClient
 import kotlinx.coroutines.launch
 
+
 class ConsultaViewModel : ViewModel(){
     private val repository = ResiduoRepository(RetrofitClient.api)
+
 
     var pesquisa by mutableStateOf("")
         private set
 
+
     var resultados by mutableStateOf<List<Residuo>>(emptyList())
         private set
+
 
     fun atualizarPesquisa(texto: String){
         pesquisa = texto

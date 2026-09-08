@@ -72,7 +72,7 @@ fun AppNavigation() {
             }
         }
         composable("scanner") {
-            ScannerScreen()
+            ScannerScreen(navController = navController)
         }
         composable("mapa") {
             MapaScreen()

@@ -16,4 +16,8 @@ class ResiduoRepository(private val api: LeafyApi)
     suspend fun pesquisarResiduos(nome: String): List<Residuo>{ // residuo pelo nome
         return api.pesquisarResiduos(nome)
     }
+
+    suspend fun buscarPorCodigo(codigo:String): Residuo{
+        return api.buscarPorCodigo(codigo)
+    }
 }

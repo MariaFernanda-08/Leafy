@@ -27,6 +27,13 @@ connection.connect((error) => { // testar conexão c o MySQL
     console.log("Conectado ao banco de dados.")
 })
 
+function formatarResiduo(residuo){ // formata dados do banco para API
+    return{
+        ...residuo,
+        reciclavel: Boolean(residuo.reciclavel)
+    }
+}
+
 // GET
 app.get("/", (req,res) => { // teste da API
     res.json({
@@ -43,7 +50,8 @@ app.get("/residuos", (req,res) => {
                 erro: "Erro ao buscar resíduos"
             })
         }
-        res.json(results)
+        const residuosFormatados = results.map(formatarResiduo)
+        res.json(residuosFormatados)
     })
 })
 
@@ -68,9 +76,32 @@ app.get("/residuos/buscar",(req,res)=> { // vai pesquisar o resíduo pelo nome
                     erro: "Erro ao pesquisar resíudos"
                 })
             }
-            res.json(results)
+            const residuosFormatados = results.map(formatarResiduo)
+            res.json(residuosFormatados)
         }
     )
+})
+
+app.get("/residuos/codigo/:codigo", (req,res) => { // vai buscar pelo código de barras
+    const codigo = req.params.codigo
+    const sql = "SELECT * FROM residuos WHERE codigo_barras = ?"
+    
+    connection.query(sql, [codigo], (error, results) => {
+        if (error) {
+            console.error("Erro ao buscar resíduo pelo código:", error)
+
+            return res.status(500).json({
+                erro: "Erro ao buscar resíduo"
+            })
+        }
+        if (results.length === 0){
+            return res.status(404).json({
+                erro: "Produto não encontrado"
+            })
+        }
+        res.json(formatarResiduo(results[0]))
+    })
+
 })
 
 app.get("/residuos/:id", (req,res) => { // vai buscar o residuo pelo ID
@@ -88,13 +119,13 @@ app.get("/residuos/:id", (req,res) => { // vai buscar o residuo pelo ID
                 erro: "Resíduo não encontrado"
             })
         }
-        res.json(results[0])
+        res.json(formatarResiduo(results[0]))
     })
 })
 
 // PORT
 const PORT = process.env.PORT || 3000
 
-app.listen(PORT,() => {
+app.listen(PORT,"0.0.0.0",() => {
     console.log(`Servidor Leafy rodando na porta ${PORT}`)
 })

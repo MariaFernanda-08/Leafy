@@ -18,4 +18,9 @@ interface LeafyApi {
     suspend fun pesquisarResiduos(
         @Query("nome") nome: String
     ): List<Residuo>
+
+    @GET("residuos/codigo/{codigo}")
+    suspend fun buscarPorCodigo(
+        @Path("codigo") codigo:String
+    ): Residuo
 }
