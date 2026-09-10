@@ -66,8 +66,9 @@ fun ScannerScreen(
                     if (residuo != null) {
                         Log.d(
                             "LEAFY_SCANNER",
-                            "Navegando paea detalhes/${residuo.id}"
+                            "Navegando para detalhes/${residuo.id}"
                         )
+                        navController.navigate("detalhes/${residuo.id}")
                     } else {
                         Log.d(
                             "LEAFY_SCANNER",

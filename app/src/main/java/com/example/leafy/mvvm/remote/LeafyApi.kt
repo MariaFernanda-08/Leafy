@@ -1,5 +1,6 @@
 package com.example.leafy.mvvm.remote
 
+import com.example.leafy.mvvm.model.data.PontoColeta
 import com.example.leafy.mvvm.model.data.Residuo
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -23,4 +24,7 @@ interface LeafyApi {
     suspend fun buscarPorCodigo(
         @Path("codigo") codigo:String
     ): Residuo
+
+    @GET("pontos-coleta")
+    suspend fun buscarPontosColeta(): List<PontoColeta>
 }

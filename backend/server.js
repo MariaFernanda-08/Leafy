@@ -123,6 +123,21 @@ app.get("/residuos/:id", (req,res) => { // vai buscar o residuo pelo ID
     })
 })
 
+app.get("/pontos-coleta", (req,res) => { //ve os pontos de coleta
+    const sql = "SELECT * FROM pontos_coleta"
+
+    connection.query(sql, (error, resultados) => {
+        if (error){
+            console.error("Erro ao buscar pontos de coleta:", error)
+
+            return res.status(500).json({
+                erro: "Erro ao buscar pontos de coleta"
+            });
+        }
+        res.json(resultados)
+    })
+})
+
 // PORT
 const PORT = process.env.PORT || 3000
 

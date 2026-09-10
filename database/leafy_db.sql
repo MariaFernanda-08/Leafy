@@ -31,8 +31,10 @@ CREATE TABLE `pontos_coleta` (
   `longitude` decimal(11,8) NOT NULL,
   `descricao` text DEFAULT NULL,
   `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `materiais_aceitos` text DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +43,7 @@ CREATE TABLE `pontos_coleta` (
 
 LOCK TABLES `pontos_coleta` WRITE;
 /*!40000 ALTER TABLE `pontos_coleta` DISABLE KEYS */;
-INSERT INTO `pontos_coleta` VALUES (1,'Ecoponto Central','Recicláveis','Endereço de exemplo',-23.55052000,-46.63330800,'Ponto de coleta para materiais recicláveis.','2026-09-03 11:41:41'),(2,'Coleta de Eletrônicos','Eletrônicos','Endereço de exemplo',-23.55100000,-46.63400000,'Ponto destinado ao descarte de equipamentos eletrônicos.','2026-09-03 11:41:41'),(3,'Farmácia Coletora','Medicamentos','Endereço de exemplo',-23.54950000,-46.63250000,'Local para descarte adequado de medicamentos vencidos.','2026-09-03 11:41:41');
+INSERT INTO `pontos_coleta` VALUES (4,'Ecoponto Sabará','Ecoponto','Rua Adelino Rodrigues Gatto x Rua Afonso Vincoletto',-22.11641260,-51.42410280,'Localizado na zona oeste. Recebe pequenos volumes de entulho de construção, móveis, eletrônicos, eletrodomésticos, madeira e materiais recicláveis.','2026-09-10 17:37:59','Plástico, papel, metal, móveis, eletrônicos, eletrodomésticos, madeira e entulho','Aberto'),(5,'Ecoponto Cambuci','Ecoponto','Avenida Dom Pedro I, nº 38',-22.14862630,-51.38210310,'Ecoponto temporariamente fechado. Recebe recicláveis, móveis usados, pequenos volumes de entulho, pequenas quantidades de poda e óleo de cozinha usado.','2026-09-10 17:37:59','Papel, plástico, metal, vidro, móveis, entulho, poda e óleo de cozinha','Temporariamente fechado');
 /*!40000 ALTER TABLE `pontos_coleta` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -64,7 +66,7 @@ CREATE TABLE `residuos` (
   `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `codigo_barras` (`codigo_barras`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,7 +75,7 @@ CREATE TABLE `residuos` (
 
 LOCK TABLES `residuos` WRITE;
 /*!40000 ALTER TABLE `residuos` DISABLE KEYS */;
-INSERT INTO `residuos` VALUES (1,'Garrafa PET','789000000001','Plástico','Esvazie, lave e encaminhe para a coleta seletiva.',1,'Cerca de 400 anos','Pode permanecer por muito tempo no ambiente quando descartada incorretamente.','2026-09-03 11:33:31'),(2,'Lata de alumínio','789000000002','Metal','Esvazie e encaminhe para a coleta seletiva.',1,'Cerca de 200 anos','O descarte incorreto contribui para a poluição do ambiente.','2026-09-03 11:33:31'),(3,'Papelão','789000000003','Papel','Mantenha seco e encaminhe para a coleta seletiva.',1,'Cerca de 3 meses','Pode ser reciclado e reaproveitado na produção de novos materiais.','2026-09-03 11:33:31'),(4,'Guardanapo usado',NULL,'Orgânico','Descarte conforme as orientações locais para resíduos não recicláveis.',0,'Cerca de 1 a 3 meses','Quando descartado incorretamente, pode contribuir para a poluição.','2026-09-03 11:33:31'),(5,'Garrafa de vidro','789000000004','Vidro','Lave a embalagem e encaminhe para a coleta seletiva.',1,'Mais de 4000 anos','O vidro descartado incorretamente permanece no ambiente por um período extremamente longo.','2026-09-03 11:33:31'),(6,'Caixa longa vida','789000000005','Papel','Lave, se possível, e encaminhe para pontos de coleta ou coleta seletiva.',1,'Cerca de 5 anos','É composta por diferentes materiais, exigindo processos específicos de reciclagem.','2026-09-03 11:33:31');
+INSERT INTO `residuos` VALUES (1,'Garrafa PET','789000000001','Plástico','Esvazie, lave e encaminhe para a coleta seletiva.',1,'Cerca de 400 anos','Pode permanecer por muito tempo no ambiente quando descartada incorretamente.','2026-09-03 11:33:31'),(2,'Lata de alumínio','789000000002','Metal','Esvazie e encaminhe para a coleta seletiva.',1,'Cerca de 200 anos','O descarte incorreto contribui para a poluição do ambiente.','2026-09-03 11:33:31'),(3,'Papelão','789000000003','Papel','Mantenha seco e encaminhe para a coleta seletiva.',1,'Cerca de 3 meses','Pode ser reciclado e reaproveitado na produção de novos materiais.','2026-09-03 11:33:31'),(4,'Guardanapo usado',NULL,'Orgânico','Descarte conforme as orientações locais para resíduos não recicláveis.',0,'Cerca de 1 a 3 meses','Quando descartado incorretamente, pode contribuir para a poluição.','2026-09-03 11:33:31'),(5,'Garrafa de vidro','789000000004','Vidro','Lave a embalagem e encaminhe para a coleta seletiva.',1,'Mais de 4000 anos','O vidro descartado incorretamente permanece no ambiente por um período extremamente longo.','2026-09-03 11:33:31'),(6,'Caixa longa vida','789000000005','Papel','Lave, se possível, e encaminhe para pontos de coleta ou coleta seletiva.',1,'Cerca de 5 anos','É composta por diferentes materiais, exigindo processos específicos de reciclagem.','2026-09-03 11:33:31'),(7,'Trident X Senses Melância Mint','7622210570376','Plástico','Descarte na coleta seletiva para plásticos, preferencialmente com a embalagaem limpa.',1,'Mais de 400 anos','Pode contribuir para a poluição do solo e de ambientes aquáticos.','2026-09-08 16:40:25');
 /*!40000 ALTER TABLE `residuos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -115,4 +117,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-09-03 10:47:00
+-- Dump completed on 2026-09-10 16:24:53
