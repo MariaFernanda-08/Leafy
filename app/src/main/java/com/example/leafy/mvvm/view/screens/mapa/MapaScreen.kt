@@ -12,6 +12,19 @@ import androidx.compose.runtime.getValue
 import com.example.leafy.mvvm.viewmodel.PontoColetaViewModel
 import androidx.compose.runtime.LaunchedEffect
 import com.google.gson.Gson
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.compose.ui.platform.LocalContext
+import android.location.Location
+import android.location.LocationManager
+import android.annotation.SuppressLint
+import android.location.LocationListener
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 
 @Composable
 fun MapaScreen(
@@ -21,6 +34,58 @@ fun MapaScreen(
    LaunchedEffect(Unit) {
        viewModel.buscarPontos()
    }
+
+    val context = LocalContext.current
+    var locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+    val ultimaLocalizacao = remember { mutableStateOf<Location?>(null)}
+    val locationListener = remember {
+        LocationListener { location ->
+            ultimaLocalizacao.value = location
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (
+            ContextCompat.checkSelfPermission(
+                context,Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                1000L,
+                1f,
+                locationListener
+            )
+        }
+    }
+
+    val permissaoLocalizacao = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
+    {
+        permissoes ->
+            val permitida =
+                permissoes[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                        permissoes[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+            if (permitida){
+
+            }
+    }
+
+    LaunchedEffect(Unit) {
+        val temPermissao =
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        if (!temPermissao){
+            permissaoLocalizacao.launch(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+            )
+        }
+    }
 
     val html = """
         <!DOCTYPE html>
@@ -111,6 +176,66 @@ fun MapaScreen(
                 .leafy-info {
                     color: #444;
                     line-height: 1.5;
+                } 
+                
+                .leafy-controle-localizacao {
+                    width: 45px;
+                    height: 45px;
+
+                    background: white;
+                    border-radius: 8px;
+
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    font-size: 22px;
+
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+
+                    cursor: pointer;
+                }
+                
+                .vermelho {
+                    background-color: #F44336;
+                }
+                
+                #filtros {
+                    position: absolute;
+                    top: 55px;
+                    left: 10px;
+                    right: 10px;
+                    z-index: 1000;
+
+                    display: flex;
+                    gap: 8px;
+
+                    overflow-x: auto;
+                    padding: 5px;
+                }
+
+                #filtros button {
+                    border: none;
+                    background: white;
+                    padding: 10px 14px;
+
+                    border-radius: 20px;
+
+                    font-size: 14px;
+                    font-weight: bold;
+
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+
+                    white-space: nowrap;
+                }
+
+                #filtros button:active {
+                    transform: scale(0.95);
+                }
+                
+                #filtros button.ativo {
+                    background: #4CAF50;
+                    color: white;
                 }
                 
             </style>
@@ -122,25 +247,277 @@ fun MapaScreen(
 
         <body>
 
-            <div id="mensagem">
-                Carregando Leaflet...
+            <div id="filtros">
+                <button data-filtro="todos" onclick="filtrarPontos('todos')">Todos</button>
+                <button data-filtro="reciclaveis" onclick="filtrarPontos('reciclaveis')">
+                    ♻️ Recicláveis
+                </button>
+                <button data-filtro="eletronicos" onclick="filtrarPontos('eletronicos')">
+                    🔌 Eletrônicos
+                </button>
+                <button data-filtro="moveis" onclick="filtrarPontos('moveis')">
+                    🪑 Móveis
+                </button>
+                <button data-filtro="entulho" onclick="filtrarPontos('entulho')">
+                    🧱 Entulho
+                </button>
             </div>
 
             <div id="map"></div>
 
             <script>
-                document.getElementById("mensagem").innerHTML =
-                    "JavaScript funcionando!";
+                var map
+                var iconeAberto
+                var iconeFechado
+                var pontosRecebidos = []
+                var mapaPronto = false
+                var marcadorUsuario = null
+                
+                function centralizarMinhaLocalizacao() {
+
+                    if (marcadorUsuario !== null) {
+
+                        var posicao = marcadorUsuario.getLatLng();
+
+                        map.setView(
+                            [posicao.lat, posicao.lng],
+                            14
+                        );
+                    }
+                }
+                
+                var iconeUsuario = L.divIcon({
+                    className: 'marcador-usuario',
+                    html: '<div class="marcador vermelho"></div>',
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                });
+                
+                function receberLocalizacao(latitude, longitude) {
+                    if (!mapaPronto) {
+                        return;
+                    }
+                
+                    if (marcadorUsuario !== null) {
+                        map.removeLayer(marcadorUsuario);
+                    }
+                
+                    marcadorUsuario = L.marker(
+                        [latitude, longitude],
+                        {icon: iconeUsuario}
+                    )
+                    .addTo(map)
+                    .bindPopup(
+                        '<b>📍 Você está aqui</b>'
+                    );
+                
+                    map.setView(
+                        [latitude, longitude],
+                        14
+                    );
+                } 
+
+                function adicionarPontos() {
+
+                    if (!mapaPronto || pontosRecebidos.length === 0) {
+                        return;
+                    }
+
+                    pontosRecebidos.forEach(function(ponto) {
+
+                        var icone;
+
+                        if (ponto.status === "Aberto") {
+                            icone = iconeAberto;
+                        } else {
+                            icone = iconeFechado;
+                        }
+
+                        L.marker(
+                            [ponto.latitude, ponto.longitude],
+                            { icon: icone }
+                        )
+                        .addTo(map)
+                        .bindPopup(
+                            '<div class="leafy-popup">' +
+
+                                '<div class="leafy-titulo">🌱 ' +
+                                    ponto.nome +
+                                '</div>' +
+
+                                '<div class="' +
+                                    (ponto.status === "Aberto"
+                                        ? "leafy-status-aberto"
+                                        : "leafy-status-fechado") +
+                                '">' +
+                                    '● ' + ponto.status +
+                                '</div>' +
+
+                                '<div class="leafy-info">' +
+
+                                    '<b>📍 Endereço</b><br>' +
+                                    ponto.endereco +
+
+                                    '<br><br>' +
+
+                                    '<b>♻️ Aceita:</b><br>' +
+                                    ponto.materiais_aceitos +
+
+                                    '<br><br>' +
+
+                                    '<b>ℹ️ Informações:</b><br>' +
+                                    ponto.descricao +
+
+                                '</div>' +
+
+                            '</div>'
+                        );
+                    });
+                }
+
+                var filtroAtual = 'todos';
+                var marcadoresPontos = [];
+
+                function receberPontos(pontos) {
+
+                    pontosRecebidos = pontos;
+
+                    // Remove os marcadores antigos
+                    marcadoresPontos.forEach(function(marcador) {
+                        map.removeLayer(marcador);
+                    });
+
+                    marcadoresPontos = [];
+
+                    pontos.forEach(function(ponto) {
+
+                        var materiais = (ponto.materiais_aceitos || '').toLowerCase();
+
+                        var mostrar = false;
+
+                        if (filtroAtual === 'todos') {
+                            mostrar = true;
+                        } 
+                        else if (
+                            filtroAtual === 'reciclaveis' &&
+                            (
+                                materiais.includes('papel') ||
+                                materiais.includes('plástico') ||
+                                materiais.includes('plastico') ||
+                                materiais.includes('vidro') ||
+                                materiais.includes('metal')
+                            )
+                        ) {
+                            mostrar = true;
+                        }
+                        else if (
+                            filtroAtual === 'eletronicos' &&
+                            (
+                                materiais.includes('eletrônico') ||
+                                materiais.includes('eletronico')
+                            )
+                        ) {
+                            mostrar = true;
+                        }
+                        else if (
+                            filtroAtual === 'moveis' &&
+                            (
+                                materiais.includes('móveis') ||
+                                materiais.includes('moveis')
+                            )
+                        ) {
+                            mostrar = true;
+                        }
+                        else if (
+                            filtroAtual === 'entulho' &&
+                            materiais.includes('entulho')
+                        ) {
+                            mostrar = true;
+                        }
+
+                        if (mostrar) {
+
+                            var classe = ponto.status === 'Aberto'
+                                ? 'verde'
+                                : 'laranja';
+
+                            var icone = L.divIcon({
+                                className: 'marcador-ponto',
+                                html: '<div class="marcador ' + classe + '"></div>',
+                                iconSize: [26, 26],
+                                iconAnchor: [13, 13]
+                            });
+
+                            var marcador = L.marker(
+                                [ponto.latitude, ponto.longitude],
+                                { icon: icone }
+                            )
+                            .addTo(map)
+                            .bindPopup(
+                                '<b>' + ponto.nome + '</b><br>' +
+                                ponto.endereco + '<br><br>' +
+                                '<b>Materiais aceitos:</b><br>' +
+                                (ponto.materiais_aceitos || 'Não informado') + '<br><br>' +
+                                '<b>Status:</b> ' + ponto.status
+                            );
+
+                            marcadoresPontos.push(marcador);
+                        }
+                    });
+                }
+                
+                function filtrarPontos(filtro) {
+                    filtroAtual = filtro;
+                    
+                    var botoes = document.querySelectorAll('#filtros button');
+
+                    botoes.forEach(function(botao) {
+                        botao.classList.remove('ativo');
+                    });
+                
+                    var botaoSelecionado = document.querySelector(
+                        '#filtros button[data-filtro="' + filtro + '"]'
+                    );
+                
+                    if (botaoSelecionado !== null) {
+                        botaoSelecionado.classList.add('ativo');
+                    }
+                    
+                    receberPontos(pontosRecebidos);
+                }
 
                 setTimeout(function() {
 
-                    document.getElementById("mensagem").innerHTML =
-                        "Criando mapa...";
-
-                    var map = L.map('map').setView(
+                    map = L.map('map').setView(
                         [-22.1225, -51.3883],
                         13
                     );
+
+                    var controleLocalizacao = L.control({
+                        position: 'bottomright'
+                    });
+
+                    controleLocalizacao.onAdd = function() {
+
+                        var div = L.DomUtil.create(
+                            'div',
+                            'leafy-controle-localizacao'
+                        );
+
+                        div.innerHTML = '📍';
+
+                        div.title = 'Minha localização';
+
+                        div.onclick = function() {
+                            centralizarMinhaLocalizacao();
+                        };
+
+                        L.DomEvent.disableClickPropagation(div);
+
+                        return div;
+                    };
+
+                    controleLocalizacao.addTo(map);
 
                     var tiles = L.tileLayer(
                         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -149,128 +526,25 @@ fun MapaScreen(
                             attribution: '&copy; OpenStreetMap contributors'
                         }
                     );
-                    
-                    tiles.on('tileerror', function(error) {
-                        document.getElementById("mensagem").innerHTML =
-                            "❌ ERRO AO CARREGAR TILES: " + error.error;
-                    });
-
-                    tiles.on('load', function() {
-                        document.getElementById("mensagem").innerHTML =
-                            "✅ TILES CARREGADOS!";
-                    });
 
                     tiles.addTo(map);
                     
-                    var iconeAberto = L.divIcon({
+                    iconeAberto = L.divIcon({
                         className: 'marcador-leafy',
                         html: '<div class="marcador verde"></div>',
                         iconSize: [20, 20],
                         iconAnchor: [10, 10]
                     });
 
-                    var iconeFechado = L.divIcon({
+                    iconeFechado = L.divIcon({
                         className: 'marcador-leafy',
                         html: '<div class="marcador laranja"></div>',
                         iconSize: [20, 20],
                         iconAnchor: [10, 10]
                     });
                     
-                    function receberPontos(pontos) {
-
-                        console.log("Pontos recebidos:", pontos);
-
-                        pontos.forEach(function(ponto) {
-
-                            var icone;
-
-                            if (ponto.status === "Aberto") {
-                                icone = iconeAberto;
-                            } else {
-                                icone = iconeFechado;
-                            }
-
-                            L.marker(
-                                [ponto.latitude, ponto.longitude],
-                                { icon: icone }
-                            )
-                            .addTo(map)
-                            .bindPopup(
-                                '<div class="leafy-popup">' +
-                                    '<div class="leafy-titulo">🌱 ' +
-                                        ponto.nome +
-                                    '</div>' +
-
-                                    '<div class="' +
-                                        (ponto.status === "Aberto"
-                                            ? "leafy-status-aberto"
-                                            : "leafy-status-fechado") +
-                                    '">' +
-                                        '● ' + ponto.status +
-                                    '</div>' +
-
-                                    '<div class="leafy-info">' +
-                                        '<b>📍 Endereço</b><br>' +
-                                        ponto.endereco +
-                                        '<br><br>' +
-
-                                        '<b>♻️ Aceita:</b><br>' +
-                                        ponto.materiais_aceitos +
-                                        '<br><br>' +
-
-                                        '<b>ℹ️ Informações:</b><br>' +
-                                        ponto.descricao +
-                                    '</div>' +
-                                '</div>'
-                            );
-                        });
-                    }
-                    
-                    L.marker([-22.1164126, -51.4241028], {icon: iconeAberto})
-                        .addTo(map)
-                        .bindPopup(
-                            '<div class="leafy-popup">' +
-                                '<div class="leafy-titulo">🌱 Ecoponto Sabará</div>' +
-                                '<div class="leafy-status-aberto">● Aberto</div>' +
-                                '<div class="leafy-info">' +
-                                    '<b>📍 Endereço</b><br>' +
-                                    'Rua Adelino Rodrigues Gatto x Rua Afonso Vincoletto<br><br>' +
-                        
-                                    '<b>♻️ Aceita:</b><br>' +
-                                    '• Entulho de pequenas obras<br>' +
-                                    '• Móveis<br>' +
-                                    '• Eletrônicos e eletrodomésticos<br>' +
-                                    '• Madeira<br>' +
-                                    '• Plásticos, papéis e metais<br><br>' +
-                        
-                                    '<b>⚠️ Não aceita:</b><br>' +
-                                    'Resíduos perigosos, pneus e lixo orgânico.' +
-                                '</div>' +
-                            '</div>'
-                        );
-                        
-                    L.marker([-22.1486263, -51.3821031], {icon: iconeFechado})
-                        .addTo(map)
-                        .bindPopup(
-                            '<div class="leafy-popup">' +
-                                '<div class="leafy-titulo">🌱 Ecoponto Cambuci</div>' +
-                                '<div class="leafy-status-fechado">● Temporariamente fechado</div>' +
-                                '<div class="leafy-info">' +
-                                    '<b>📍 Endereço</b><br>' +
-                                    'Avenida Dom Pedro I, nº 38<br><br>' +
-
-                                    '<b>♻️ Aceita:</b><br>' +
-                                    '• Papel, plástico, metal e vidro<br>' +
-                                    '• Móveis usados<br>' +
-                                    '• Entulho de pequenas obras<br>' +
-                                    '• Pequenas quantidades de poda<br>' +
-                                    '• Óleo de cozinha usado<br><br>' +
-
-                                    '<b>⚠️ Não aceita:</b><br>' +
-                                    'Resíduos industriais, hospitalares e produtos perigosos.' +
-                                '</div>' +
-                            '</div>'
-                        );
+                    mapaPronto = true
+                    receberPontos(pontosRecebidos)
                     
                 }, 1000);
 
@@ -293,7 +567,7 @@ fun MapaScreen(
                     ){
                         super.onPageFinished(view,url)
                         val json = Gson().toJson(pontos)
-                        evaluateJavascript("receberPontos($json;", null)
+                        evaluateJavascript("receberPontos($json);", null)
                     }
                 }
 
@@ -313,6 +587,17 @@ fun MapaScreen(
                     "UTF-8",
                     null
                 )
+            }
+        },
+        update = { webView ->
+            if (pontos.isNotEmpty()) {
+                val json = Gson().toJson(pontos)
+                webView.evaluateJavascript(
+                    "receberPontos($json);", null
+                )
+            }
+            ultimaLocalizacao.value?.let { localizacao ->
+                webView.evaluateJavascript("receberLocalizacao(${localizacao.latitude}, ${localizacao.longitude});", null)
             }
         }
     )

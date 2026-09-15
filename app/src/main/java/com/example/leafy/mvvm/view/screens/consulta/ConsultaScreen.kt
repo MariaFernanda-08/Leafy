@@ -14,62 +14,207 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.leafy.mvvm.model.data.Residuo
 import com.example.leafy.mvvm.viewmodel.ConsultaViewModel
 import androidx.compose.foundation.clickable
 import androidx.navigation.NavController
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.graphics.Color
+
 
 @Composable
 fun ConsultaScreen(navController: NavController, viewModel: ConsultaViewModel = viewModel()) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    )
     {
         Text(
-            text = "Consulta de Resíduos",
-            style = MaterialTheme.typography.headlineSmall)
+            text = "Encontre um resíduo",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Text(
+            text = "Pesquise pelo nome do produto ou material para descobrir como descartá-lo corretamente.",
+            style = MaterialTheme.typography.bodyMedium
+        )
+
         OutlinedTextField(
             value = viewModel.pesquisa,
-            onValueChange = {viewModel.atualizarPesquisa(it)},
+            onValueChange = { viewModel.atualizarPesquisa(it) },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Pesquisar resíduo")},
+            label = {
+                Text("Pesquisar resíduo")
+            },
             placeholder = {
-                Text("Ex.: Garrafa PET")},
-            singleLine = true
+                Text("Ex.: Garrafa PET")
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Pesquisar"
+                )
+            },
+            singleLine = true,
+            shape = MaterialTheme.shapes.large
         )
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+
+        Text(
+            text = "Explore por categoria",
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(viewModel.resultados){ residuo -> ResiduoCard(
-                residuo = residuo,
-                onClick = {navController.navigate("detalhes/${residuo.id}")})}
+            CategoriaCard(
+                emoji = "♻️",
+                nome = "Plástico",
+                modifier = Modifier.weight(1f),
+                selecionado = viewModel.categoriaSelecionada == "Plástico",
+                onClick = { viewModel.filtrarPorCategoria("Plástico")}
+            )
+
+            CategoriaCard(
+                emoji = "📄",
+                nome = "Papel",
+                modifier = Modifier.weight(1f),
+                selecionado = viewModel.categoriaSelecionada == "Papel",
+                onClick = { viewModel.filtrarPorCategoria("Papel")}
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            CategoriaCard(
+                emoji = "🍾",
+                nome = "Vidro",
+                modifier = Modifier.weight(1f),
+                selecionado = viewModel.categoriaSelecionada == "Vidro",
+                onClick = { viewModel.filtrarPorCategoria("Vidro")}
+            )
+
+            CategoriaCard(
+                emoji = "🔩",
+                nome = "Metal",
+                modifier = Modifier.weight(1f),
+                selecionado = viewModel.categoriaSelecionada == "Metal",
+                onClick = { viewModel.filtrarPorCategoria("Metal")}
+            )
+
+        }
+
+        if (viewModel.categoriaSelecionada != null){
+            Text(
+                text = "Ver todos os resíduos",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        viewModel.limparFiltro()
+                    },
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
+
+        if (viewModel.pesquisa.isBlank()) {
+
+        } else if (viewModel.resultados.isEmpty()) {
+
+            Text(
+                text = "😕 Nenhum resíduo encontrado.",
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+        } else {
+
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+               items(viewModel.resultados) {residuo ->
+                   ResiduoCard(
+                       residuo = residuo,
+                       onClick = {
+                           navController.navigate("detalhes/${residuo.id}")
+                       }
+                   )
+               }
+            }
         }
     }
 }
-
 @Composable
 private fun ResiduoCard(
     residuo: Residuo,
     onClick: () -> Unit
 ){
-    Card(modifier = Modifier.fillMaxWidth().clickable { onClick() })
+    Card(modifier = Modifier
+        .fillMaxWidth()
+        .clickable { onClick() })
     {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp))
         {
             Text(text = residuo.nome, style = MaterialTheme.typography.titleMedium)
-            Text(text = "Tipo: ${residuo.tipo}")
-            Text(
-                text = if (residuo.reciclavel) {
+
+            Text(text = "Tipo: ${residuo.tipo}", style = MaterialTheme.typography.bodyMedium)
+
+            Text(text = if (residuo.reciclavel) {
                     "♻️ Reciclável"
                 } else {
-                    "Não Reciclável"
-                }
+                    "❌ Não reciclável"
+                },
+                style = MaterialTheme.typography.bodyMedium
             )
-            Text(text = "Descarte: ${residuo.instrucoesDescarte}")
-            Text(text = "Decomposição: ${residuo.tempoDecomposicao}")
-            Text(text = "Impacto Ambiental: ${residuo.impactoAmbiental}")
+
+            Text(text = "Toque para ver detalhes →", style = MaterialTheme.typography.labelMedium)
+        }
+    }
+}
+@Composable
+private fun CategoriaCard(
+    emoji: String,
+    nome: String,
+    modifier: Modifier = Modifier,
+    selecionado: Boolean = false,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = modifier.clickable { onClick() },
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(
+            containerColor = if(selecionado){
+                Color(0xFFD9F5E5)
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            }
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(
+                text = emoji,
+                style = MaterialTheme.typography.headlineSmall
+            )
+
+            Text(
+                text = nome,
+                style = MaterialTheme.typography.labelLarge
+            )
         }
     }
 }

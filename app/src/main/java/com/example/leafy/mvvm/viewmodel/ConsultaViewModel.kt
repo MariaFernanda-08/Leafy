@@ -14,14 +14,14 @@ import kotlinx.coroutines.launch
 class ConsultaViewModel : ViewModel(){
     private val repository = ResiduoRepository(RetrofitClient.api)
 
-
     var pesquisa by mutableStateOf("")
         private set
-
 
     var resultados by mutableStateOf<List<Residuo>>(emptyList())
         private set
 
+    var categoriaSelecionada by mutableStateOf<String?>(null)
+        private set
 
     fun atualizarPesquisa(texto: String){
         pesquisa = texto
@@ -39,4 +39,34 @@ class ConsultaViewModel : ViewModel(){
             }
         }
     }
+
+
+    fun filtrarPorCategoria(categoria: String) {
+        viewModelScope.launch {
+            try {
+                val residuos = repository.buscarResiduos()
+
+                resultados = residuos.filter {
+                    it.tipo.equals(categoria, ignoreCase = true)
+                }
+
+                pesquisa = categoria
+                categoriaSelecionada = categoria
+            } catch (e: Exception) {
+                resultados = emptyList()
+                android.util.Log.e(
+                    "LEAFY_API",
+                    "Erro ao filtrar categoria",
+                    e
+                )
+            }
+        }
+    }
+
+    fun limparFiltro() {
+        pesquisa = ""
+        resultados = emptyList()
+        categoriaSelecionada = null
+    }
+
 }
