@@ -72,18 +72,18 @@ fun ConsultaScreen(navController: NavController, viewModel: ConsultaViewModel = 
             style = MaterialTheme.typography.titleMedium
         )
 
+        CategoriaCard(
+            emoji = "♻️",
+            nome = "Plástico",
+            modifier = Modifier.fillMaxWidth(),
+            selecionado = viewModel.categoriaSelecionada == "Plástico",
+            onClick = { viewModel.filtrarPorCategoria("Plástico")}
+        )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            CategoriaCard(
-                emoji = "♻️",
-                nome = "Plástico",
-                modifier = Modifier.weight(1f),
-                selecionado = viewModel.categoriaSelecionada == "Plástico",
-                onClick = { viewModel.filtrarPorCategoria("Plástico")}
-            )
-
             CategoriaCard(
                 emoji = "📄",
                 nome = "Papel",
@@ -91,12 +91,7 @@ fun ConsultaScreen(navController: NavController, viewModel: ConsultaViewModel = 
                 selecionado = viewModel.categoriaSelecionada == "Papel",
                 onClick = { viewModel.filtrarPorCategoria("Papel")}
             )
-        }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
             CategoriaCard(
                 emoji = "🍾",
                 nome = "Vidro",
@@ -104,7 +99,11 @@ fun ConsultaScreen(navController: NavController, viewModel: ConsultaViewModel = 
                 selecionado = viewModel.categoriaSelecionada == "Vidro",
                 onClick = { viewModel.filtrarPorCategoria("Vidro")}
             )
-
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             CategoriaCard(
                 emoji = "🔩",
                 nome = "Metal",
@@ -113,6 +112,13 @@ fun ConsultaScreen(navController: NavController, viewModel: ConsultaViewModel = 
                 onClick = { viewModel.filtrarPorCategoria("Metal")}
             )
 
+            CategoriaCard(
+                emoji = "🌱",
+                nome = "Orgânico",
+                modifier = Modifier.weight(1f),
+                selecionado = viewModel.categoriaSelecionada == "Orgânico",
+                onClick = { viewModel.filtrarPorCategoria("Orgânico")}
+            )
         }
 
         if (viewModel.categoriaSelecionada != null){
@@ -160,7 +166,23 @@ private fun ResiduoCard(
 ){
     Card(modifier = Modifier
         .fillMaxWidth()
-        .clickable { onClick() })
+        .clickable { onClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = when(residuo.tipo.lowercase()){
+                "plástico","plastico"  -> Color(0xFFFFE1E1)
+
+                "papel" -> Color(0xFFE0EDFF)
+
+                "vidro" -> Color(0xFFE1F3E2)
+
+                "metal" -> Color(0xFFFFF4CC)
+
+                "orgânico","organico"  -> Color(0xFFF0E3DC)
+
+                else -> MaterialTheme.colorScheme.surface
+            }
+        )
+        )
     {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp))
         {
@@ -193,7 +215,14 @@ private fun CategoriaCard(
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = if(selecionado){
-                Color(0xFFD9F5E5)
+                when (nome) {
+                    "Plástico" -> Color(0xFFE57373)
+                    "Papel" -> Color(0xFF64B5F6)
+                    "Vidro" -> Color(0xFF81C784)
+                    "Metal" -> Color(0xFFFFD966)
+                    "Orgânico" -> Color(0xFFA1887F)
+                    else -> MaterialTheme.colorScheme.primary
+                }
             } else {
                 MaterialTheme.colorScheme.surfaceVariant
             }
@@ -213,7 +242,12 @@ private fun CategoriaCard(
 
             Text(
                 text = nome,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
+                color = if (selecionado) {
+                    if (nome == "Metal") Color.Black else Color.White
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                }
             )
         }
     }

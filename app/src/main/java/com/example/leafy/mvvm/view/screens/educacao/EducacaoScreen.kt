@@ -128,11 +128,24 @@ fun EducacaoScreen() {
                 style = MaterialTheme.typography.bodyMedium
             )
         }
+        
+        item { Spacer(modifier = Modifier.height(4.dp)) }
 
         item {
 
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.extraLarge,
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFF0FFF8)
+                ),
+                border = androidx.compose.foundation.BorderStroke(
+                    1.dp,
+                    Color(0xFF9BE8C5)
+                )
+            ) {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(26.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
 
@@ -178,6 +191,11 @@ fun EducacaoScreen() {
                         exemplo = "Lixo comum, papel higiênico, fraldas"
                     )
                 }
+            }
+        }
+        
+        item{
+            Spacer(modifier = Modifier.height(22.dp))
         }
 
         item {
@@ -190,7 +208,6 @@ fun EducacaoScreen() {
         }
 
         items(tiposReciclagem) { tipo ->
-
             TipoReciclagemCard(
                 tipo = tipo,
                 aberto = itemAberto == tipo.nome,
@@ -204,6 +221,8 @@ fun EducacaoScreen() {
                 }
             )
         }
+
+        item { Spacer(modifier = Modifier.height(22.dp)) }
 
         item {
 
@@ -256,6 +275,8 @@ fun EducacaoScreen() {
             }
         }
 
+        item{Spacer(modifier = Modifier.height(22.dp))}
+
         item {
 
                 Column(
@@ -270,21 +291,24 @@ fun EducacaoScreen() {
                     )
 
                     Curiosidade(
+                        emoji = "🦺",
                         titulo = "Você sabia?",
                         texto = "Separar corretamente os resíduos facilita o trabalho de coleta e reciclagem."
                     )
 
                     Curiosidade(
+                        emoji = "🌱",
                         titulo = "Menos lixo, mais recursos",
                         texto = "A reciclagem permite que materiais sejam aproveitados novamente, reduzindo a necessidade de novas matérias-primas."
                     )
 
                     Curiosidade(
+                        emoji = "♻️",
                         titulo = "Pequenas atitudes",
                         texto = "Reduzir, reutilizar e reciclar são atitudes simples que podem contribuir para um consumo mais consciente."
                     )
                 }
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(22.dp))
             }
         }
     }
@@ -350,11 +374,11 @@ private fun TipoReciclagemCard(
             .fillMaxWidth()
             .clickable { onClick() },
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFEAF8F0)
+            containerColor = Color(0xFFE1F7FF)
         ),
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
-            Color(0xFFB7E8CE)
+            Color(0xFF166CB1)
         )
     ) {
 
@@ -428,7 +452,9 @@ private fun DicaCard(
 ) {
 
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFFFF)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFEAF8F0))
     ) {
 
         Row(
@@ -460,24 +486,23 @@ private fun DicaCard(
 
 @Composable
 private fun Curiosidade(
+    emoji: String,
     titulo: String,
     texto: String
 ) {
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp)
-    ) {
-
-        Text(
-            text = titulo,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = texto,
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
+   Card(modifier = Modifier.fillMaxWidth(),
+       colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFACB)),
+       border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFFEB38))
+   ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Text(text = emoji, modifier = Modifier.padding(end = 12.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(text = titulo, fontWeight = FontWeight.Bold)
+                Text(text = texto, style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+   }
 }

@@ -67,7 +67,10 @@ fun AppNavigation() {
             val residuo = viewModel.residuo
             if (residuo != null) {
                 DetalhesResiduoScreen(
-                    residuo = residuo
+                    residuo = residuo,
+                    onVoltar = {
+                        navController.popBackStack()
+                    }
                 )
             }
         }

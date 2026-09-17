@@ -20,5 +20,13 @@ data class Residuo(
     val tempoDecomposicao: String,
 
     @SerializedName("impacto_ambiental")
-    val impactoAmbiental: String
+    val impactoAmbiental: String,
+
+    @SerializedName("explicacao_reciclagem")
+    val explicacaoReciclagem: String?,
+
+    @SerializedName("dica_descarte")
+    val dicaDescarte: String?,
+
+    val curiosidade: String?
 )
