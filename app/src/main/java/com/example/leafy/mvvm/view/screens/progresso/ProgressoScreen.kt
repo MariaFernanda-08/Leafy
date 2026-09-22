@@ -3,6 +3,7 @@ package com.example.leafy.mvvm.view.screens.progresso
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,28 +23,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.HorizontalDivider
 
 @Composable
-fun ProgressoScreen() {
+fun ProgressoScreen(
+    paddingValues: PaddingValues
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF4F9F6))
             .verticalScroll(rememberScrollState())
+            .padding(paddingValues)
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
+
+        // TÍTULO
         Text(
             text = "Meu Progresso",
             style = MaterialTheme.typography.headlineSmall
         )
+
         Text(
             text = "Continue cuidando do planeta!🌍",
             style = MaterialTheme.typography.bodyMedium,
             color = Color(0xFF496057)
         )
-        Spacer(modifier = Modifier.height(6.dp))
 
+        // PROGRESSO
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
@@ -125,6 +133,9 @@ fun ProgressoScreen() {
             }
         }
 
+        Spacer(modifier = Modifier.height(4.dp))
+        
+        // SEQUÊNCIA DIÁRIA
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
@@ -165,184 +176,241 @@ fun ProgressoScreen() {
                         style = MaterialTheme.typography.bodySmall,
                         color = Color(0xFFB84A25)
                     )
-
-                    Text(
-                        text = "💎 Ganhe XP",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-
-                    AcaoXpCard(
-                        emoji = "☆",
-                        titulo = "Cadastrar Produtos",
-                        descricao = "Sugira novos produtos",
-                        xp = "+5 XP",
-                        cor = Color(0xFFEAF2FF)
-                    )
-
-                    AcaoXpCard(
-                        emoji = "♧",
-                        titulo = "Cadastrar Lixeiras",
-                        descricao = "Ajude a mapear locais",
-                        xp = "+10 XP",
-                        cor = Color(0xFFEAF8F0)
-                    )
-
-                    AcaoXpCard(
-                        emoji = "🏆",
-                        titulo = "Confirmar Informações",
-                        descricao = "Valide dados de outros usuários",
-                        xp = "+15 XP / -15 XP",
-                        cor = Color(0xFFF8EEFF)
-                    )
-
-                    AcaoXpCard(
-                        emoji = "📈",
-                        titulo = "Usar Diariamente",
-                        descricao = "Mantenha sua sequência ativa",
-                        xp = "+20 XP",
-                        cor = Color(0xFFFFF8E5)
-                    )
-
-                    Text(
-                        text = "🏆 Níveis",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-
-                    NivelCard(
-                        emoji = "🐜",
-                        nome = "Formiga Operária",
-                        descricao = "Pequenas ações, grandes resultados.",
-                        xp = "0 - 99 XP",
-                        atual = false
-                    )
-
-                    NivelCard(
-                        emoji = "🦫",
-                        nome = "Castor Engenheiro",
-                        descricao = "Construindo soluções sustentáveis.",
-                        xp = "100 - 299 XP",
-                        atual = true
-                    )
-
-                    NivelCard(
-                        emoji = "🐺",
-                        nome = "Lobo Guardião",
-                        descricao = "Protetor da alcateia e do território.",
-                        xp = "300 - 599 XP",
-                        atual = false
-                    )
-
-                    NivelCard(
-                        emoji = "🦅",
-                        nome = "Condor dos Andes",
-                        descricao = "Visão ampla sobre o planeta.",
-                        xp = "600 - 999 XP",
-                        atual = false
-                    )
-
-                    NivelCard(
-                        emoji = "🐢",
-                        nome = "Tartaruga Milenar",
-                        descricao = "Sabedoria e preservação dos mares.",
-                        xp = "1000 - 1999 XP",
-                        atual = false
-                    )
-
-                    NivelCard(
-                        emoji = "🔥",
-                        nome = "Fênix",
-                        descricao = "A Terra renascendo das cinzas.",
-                        xp = "2000 - ∞ XP",
-                        atual = false
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "🏅 Conquistas",
-                            style = MaterialTheme.typography.titleLarge
-                        )
-
-                        Text(
-                            text = "4/10",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = Color(0xFF8A5A00)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-
-                        ConquistaCard(
-                            emoji = "🌱",
-                            titulo = "Primeiro Passo",
-                            descricao = "Cadastre seu primeiro produto",
-                            desbloqueada = true,
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        ConquistaCard(
-                            emoji = "🗺️",
-                            titulo = "Explorador",
-                            descricao = "Cadastre 5 lixeiras",
-                            desbloqueada = true,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-
-                        ConquistaCard(
-                            emoji = "🔒",
-                            titulo = "Verificador",
-                            descricao = "Confirme 10 informações",
-                            desbloqueada = false,
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        ConquistaCard(
-                            emoji = "🔥",
-                            titulo = "Persistente",
-                            descricao = "Use o app por 7 dias seguidos",
-                            desbloqueada = true,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-
-                        ConquistaCard(
-                            emoji = "🛡️",
-                            titulo = "Guardião Verde",
-                            descricao = "Atinja 100 XP",
-                            desbloqueada = true,
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        ConquistaCard(
-                            emoji = "🔒",
-                            titulo = "Reciclador Mestre",
-                            descricao = "Escaneie 50 símbolos",
-                            desbloqueada = false,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // XP
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFE8F1FC)
+            ),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Text(
+                    text = "💎 Ganhe XP",
+                    style = MaterialTheme.typography.titleLarge
+                )
+
+                HorizontalDivider(
+                    color = Color(0xFFD8E5DF),
+                    thickness = 1.dp
+                )
+
+                AcaoXpCard(
+                    emoji = "☆",
+                    titulo = "Cadastrar Produtos",
+                    descricao = "Sugira novos produtos",
+                    xp = "+5 XP",
+                    cor = Color(0xFFDCEAFF)
+                )
+
+                AcaoXpCard(
+                    emoji = "♧",
+                    titulo = "Cadastrar Lixeiras",
+                    descricao = "Ajude a mapear locais",
+                    xp = "+10 XP",
+                    cor = Color(0xFFDDF3E7)
+                )
+
+                AcaoXpCard(
+                    emoji = "🏆",
+                    titulo = "Confirmar Informações",
+                    descricao = "Valide dados de outros usuários",
+                    xp = "+15 XP / -15 XP",
+                    cor = Color(0xFFF0DEFF)
+                )
+
+                AcaoXpCard(
+                    emoji = "📈",
+                    titulo = "Usar Diariamente",
+                    descricao = "Mantenha sua sequência ativa",
+                    xp = "+20 XP",
+                    cor = Color(0xFFFFF0C7)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // NÍVEIS
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFE8F4EE)
+            ),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Text(
+                    text = "🏆 Níveis",
+                    style = MaterialTheme.typography.titleLarge
+                )
+
+                HorizontalDivider(
+                    color = Color(0xFFD8E5DF),
+                    thickness = 1.dp
+                )
+
+                NivelCard(
+                    emoji = "🐜",
+                    nome = "Formiga Operária",
+                    descricao = "Pequenas ações, grandes resultados.",
+                    xp = "0 - 99 XP",
+                    atual = false,
+                )
+
+                NivelCard(
+                    emoji = "🦫",
+                    nome = "Castor Engenheiro",
+                    descricao = "Construindo soluções sustentáveis.",
+                    xp = "100 - 299 XP",
+                    atual = true
+                )
+
+                NivelCard(
+                    emoji = "🐺",
+                    nome = "Lobo Guardião",
+                    descricao = "Protetor da alcateia e do território.",
+                    xp = "300 - 599 XP",
+                    atual = false
+                )
+
+                NivelCard(
+                    emoji = "🦅",
+                    nome = "Condor dos Andes",
+                    descricao = "Visão ampla sobre o planeta.",
+                    xp = "600 - 999 XP",
+                    atual = false
+                )
+
+                NivelCard(
+                    emoji = "🐢",
+                    nome = "Tartaruga Milenar",
+                    descricao = "Sabedoria e preservação dos mares.",
+                    xp = "1000 - 1999 XP",
+                    atual = false
+                )
+
+                NivelCard(
+                    emoji = "🔥",
+                    nome = "Fênix",
+                    descricao = "A Terra renascendo das cinzas.",
+                    xp = "2000 - ∞ XP",
+                    atual = false
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // CONQUISTAS
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFFFF3D6)
+            ),
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "🏅 Conquistas",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+
+                HorizontalDivider(
+                    color = Color(0xFFE5DCC5),
+                    thickness = 1.dp
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+
+                    ConquistaCard(
+                        emoji = "🌱",
+                        titulo = "Primeiro Passo",
+                        descricao = "Cadastre seu primeiro produto",
+                        desbloqueada = true,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    ConquistaCard(
+                        emoji = "🗺️",
+                        titulo = "Explorador",
+                        descricao = "Cadastre 5 lixeiras",
+                        desbloqueada = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+
+                    ConquistaCard(
+                        emoji = "🔒",
+                        titulo = "Verificador",
+                        descricao = "Confirme 10 informações",
+                        desbloqueada = false,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    ConquistaCard(
+                        emoji = "🔥",
+                        titulo = "Persistente",
+                        descricao = "Use o app por 7 dias seguidos",
+                        desbloqueada = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+
+                    ConquistaCard(
+                        emoji = "🛡️",
+                        titulo = "Guardião Verde",
+                        descricao = "Atinja 100 XP",
+                        desbloqueada = true,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    ConquistaCard(
+                        emoji = "🔒",
+                        titulo = "Reciclador Mestre",
+                        descricao = "Escaneie 50 símbolos",
+                        desbloqueada = false,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
     }
 }
 
@@ -481,9 +549,9 @@ private fun ConquistaCard(
         modifier = modifier.height(150.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (desbloqueada) {
-                Color(0xFFFFFAE8)
+                Color(0xFFE5F5EA)
             } else {
-                Color(0xFFF0F4F3)
+                Color(0xFFE8EEEC)
             }
         ),
         shape = RoundedCornerShape(16.dp)

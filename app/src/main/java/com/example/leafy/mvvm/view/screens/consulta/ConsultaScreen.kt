@@ -21,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.leafy.mvvm.model.data.Residuo
 import com.example.leafy.mvvm.viewmodel.ConsultaViewModel
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.navigation.NavController
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -29,10 +30,14 @@ import androidx.compose.ui.graphics.Color
 
 
 @Composable
-fun ConsultaScreen(navController: NavController, viewModel: ConsultaViewModel = viewModel()) {
+fun ConsultaScreen(
+    navController: NavController,
+    paddingValues: PaddingValues,
+    viewModel: ConsultaViewModel = viewModel()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(paddingValues)
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     )

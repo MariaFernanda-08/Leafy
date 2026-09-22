@@ -3,6 +3,7 @@ package com.example.leafy.mvvm.view.screens.educacao
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,8 +41,9 @@ data class TipoReciclagem(
 
 
 @Composable
-fun EducacaoScreen() {
-
+fun EducacaoScreen(
+    paddingValues: PaddingValues
+) {
     var itemAberto by remember {
         mutableStateOf<String?>(null)
     }
@@ -107,6 +109,7 @@ fun EducacaoScreen() {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
+            .padding(paddingValues)
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {

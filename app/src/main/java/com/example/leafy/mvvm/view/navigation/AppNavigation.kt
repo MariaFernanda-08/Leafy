@@ -16,6 +16,7 @@ import androidx.navigation.navArgument
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.leafy.mvvm.viewmodel.DetalhesResiduoViewModel
 import androidx.compose.runtime.LaunchedEffect
+import com.example.leafy.mvvm.view.components.LeafyLayout
 
 @Composable
 fun AppNavigation() {
@@ -26,27 +27,43 @@ fun AppNavigation() {
         startDestination = "home")
     {
         composable("home") {
-            HomeScreen(
-                onConsultaClick = {
-                    navController.navigate("consulta")
-                },
-                onScannerClick = {
-                    navController.navigate("scanner")
-                },
-                onMapaClick = {
-                    navController.navigate("mapa")
-                },
-                onEducacaoClick = {
-                    navController.navigate("educacao")
-                },
-                onProgressoClick = {
-                    navController.navigate("progresso")
+
+            LeafyLayout(
+                rotaAtual = "home",
+                onHomeClick = { },
+                onConsultaClick = {navController.navigate("consulta")},
+                onScannerClick = {navController.navigate("scanner")},
+                onMapaClick = {navController.navigate("mapa")},
+                onEducacaoClick = {navController.navigate("educacao")}
+            ) {
+                paddingValues ->
+                HomeScreen(
+                    paddingValues = paddingValues,
+                    onConsultaClick = {navController.navigate("consulta")},
+                    onScannerClick = {navController.navigate("scanner")},
+                    onMapaClick = {navController.navigate("mapa")},
+                    onEducacaoClick = {navController.navigate("educacao")},
+                    onProgressoClick = {navController.navigate("progresso")}
+                    )
                 }
-            )
         }
 
+
         composable("consulta") {
-            ConsultaScreen(navController = navController)
+
+            LeafyLayout(
+                rotaAtual = "consulta",
+                onHomeClick = {navController.navigate("home")},
+                onConsultaClick = {},
+                onScannerClick = {navController.navigate("scanner")},
+                onMapaClick = {navController.navigate("mapa")},
+                onEducacaoClick = {navController.navigate("educacao")}
+            ) { paddingValues ->
+                ConsultaScreen(
+                    navController = navController,
+                    paddingValues = paddingValues
+                )
+            }
         }
         composable(route = "detalhes/{residuoId}",
             arguments = listOf(navArgument("residuoId")
@@ -66,25 +83,88 @@ fun AppNavigation() {
 
             val residuo = viewModel.residuo
             if (residuo != null) {
-                DetalhesResiduoScreen(
-                    residuo = residuo,
-                    onVoltar = {
-                        navController.popBackStack()
-                    }
+                LeafyLayout(
+                    rotaAtual = "",
+                    onHomeClick = {navController.navigate("home")},
+                    onConsultaClick = {navController.navigate("consulta")},
+                    onScannerClick = {navController.navigate("scanner")},
+                    onMapaClick = {navController.navigate("mapa")},
+                    onEducacaoClick = {navController.navigate("educacao")}
+                ) { paddingValues ->
+                    DetalhesResiduoScreen(
+                        residuo = residuo,
+                        paddingValues = paddingValues)
+                }
+            }
+        }
+
+        composable("scanner") {
+            LeafyLayout(
+                rotaAtual = "scanner",
+                onHomeClick = {
+                    navController.navigate("home")
+                },
+                onConsultaClick = {
+                    navController.navigate("consulta")
+                },
+                onScannerClick = { },
+                onMapaClick = {
+                    navController.navigate("mapa")
+                },
+                onEducacaoClick = {
+                    navController.navigate("educacao")
+                }
+            ) { paddingValues ->
+
+                ScannerScreen(
+                    navController = navController,
+                    paddingValues = paddingValues
                 )
             }
         }
-        composable("scanner") {
-            ScannerScreen(navController = navController)
-        }
+
         composable("mapa") {
             MapaScreen()
         }
         composable("educacao") {
-            EducacaoScreen()
+            LeafyLayout(
+                rotaAtual = "educacao",
+                onHomeClick = { navController.navigate("home") },
+                onConsultaClick = { navController.navigate("consulta") },
+                onScannerClick = { navController.navigate("scanner") },
+                onMapaClick = { navController.navigate("mapa") },
+                onEducacaoClick = { }
+            ) { paddingValues ->
+
+                EducacaoScreen(
+                    paddingValues = paddingValues
+                )
+            }
         }
         composable("progresso") {
-            ProgressoScreen()
+            LeafyLayout(
+                rotaAtual = "progresso",
+                onHomeClick = {
+                    navController.navigate("home")
+                },
+                onConsultaClick = {
+                    navController.navigate("consulta")
+                },
+                onScannerClick = {
+                    navController.navigate("scanner")
+                },
+                onMapaClick = {
+                    navController.navigate("mapa")
+                },
+                onEducacaoClick = {
+                    navController.navigate("educacao")
+                }
+            ) { paddingValues ->
+
+                ProgressoScreen(
+                    paddingValues = paddingValues
+                )
+            }
         }
     }
 }
