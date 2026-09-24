@@ -9,5 +9,6 @@ data class PontoColeta (
     val longitude: Double,
     val descricao: String?,
     val materiais_aceitos: String?,
-    val status: String
+    val status: String,
+    val horario_funcionamento: String?
 )

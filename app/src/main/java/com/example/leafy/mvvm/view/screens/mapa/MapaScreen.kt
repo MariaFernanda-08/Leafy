@@ -21,16 +21,24 @@ import androidx.core.content.ContextCompat
 import androidx.compose.ui.platform.LocalContext
 import android.location.Location
 import android.location.LocationManager
-import android.annotation.SuppressLint
 import android.location.LocationListener
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import android.content.Intent
+import android.net.Uri
+import android.webkit.JavascriptInterface
 
 @Composable
 fun MapaScreen(
@@ -152,13 +160,6 @@ fun MapaScreen(
                     min-width: 220px;
                 }
 
-                .leafy-titulo {
-                    font-size: 18px;
-                    font-weight: bold;
-                    margin-bottom: 8px;
-                    color: #2E7D32;
-                }
-
                 .leafy-status-aberto {
                     display: inline-block;
                     background: #E8F5E9;
@@ -206,18 +207,30 @@ fun MapaScreen(
                     background-color: #F44336;
                 }
                 
+                .filtros-titulo {
+                    margin: 0;
+                    padding: 12px 16px 4px 16px;
+                    font-family: sans-serif;
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: #17211C;    
+                }
+                
+                .contador-pontos{
+                    padding: 8px 16px 6px 16px;
+                    font-family: sans-serif;
+                    font-size: 14px;  
+                    color: #4F5B55;    
+                }
+                
                 #filtros {
-                    position: absolute;
-                    top: 55px;
-                    left: 10px;
-                    right: 10px;
-                    z-index: 1000;
-
+                    width: 100%;
+                    box-sizing: border-box;
                     display: flex;
                     gap: 8px;
-
                     overflow-x: auto;
-                    padding: 5px;
+                    padding: 10px;
+                    margin: 0;
                 }
 
                 #filtros button {
@@ -244,32 +257,117 @@ fun MapaScreen(
                     color: white;
                 }
                 
+                .lista-pontos{
+                    padding: 4px 16px 20px 16px;
+                }
+                
+                .card-ponto{
+                    background: #F0FFF8;
+                    border: 1px solid #00C767;
+                    border-radius: 14px;
+                    padding: 16px;
+                    margin-bottom: 12px;
+                    font-family: sans-serif;    
+                }
+                
+                .topo-ponto{
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 10px;    
+                }
+                
+                .topo-ponto strong {
+                    font-size: 16px;
+                    color: #17211C;
+                }
+                
+                .materiais {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 5px;
+                    margin-bottom: 10px;
+                }
+
+                .materiais span {
+                    background: #D8FBE9;
+                    border: 1px solid #55D99A;
+                    color: #087A45;
+                    padding: 4px 8px;
+                    border-radius: 7px;
+                    font-size: 11px;
+                }
+
+                .info-ponto {
+                    color: #4F5B55;
+                    font-size: 13px;
+                    margin-top: 7px;
+                }
+
+                .botao-como-chegar {
+                    width: 100%;
+                    margin-top: 14px;
+                    padding: 10px;
+
+                    border: none;
+                    border-radius: 7px;
+
+                    background: #00A65A;
+                    color: white;
+
+                    font-size: 14px;
+                    font-weight: bold;
+                }
+                
+                .status-ponto {
+                    display: inline-block;
+                    padding: 4px 8px;
+                    border-radius: 10px;
+                    font-size: 11px;
+                    font-weight: bold;
+                    margin-bottom: 8px;
+                }
+
+                .status-aberto {
+                    background: #E8F5E9;
+                    color: #2E7D32;
+                }
+
+                .status-fechado {
+                    background: #FFF3E0;
+                    color: #EF6C00;
+                }
+                
             </style>
 
-            <!-- Leaflet vem ANTES do nosso código -->
             <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 
         </head>
 
         <body>
-
-            <div id="filtros">
-                <button data-filtro="todos" onclick="filtrarPontos('todos')">Todos</button>
-                <button data-filtro="reciclaveis" onclick="filtrarPontos('reciclaveis')">
-                    ♻️ Recicláveis
-                </button>
-                <button data-filtro="eletronicos" onclick="filtrarPontos('eletronicos')">
-                    🔌 Eletrônicos
-                </button>
-                <button data-filtro="moveis" onclick="filtrarPontos('moveis')">
-                    🪑 Móveis
-                </button>
-                <button data-filtro="entulho" onclick="filtrarPontos('entulho')">
-                    🧱 Entulho
-                </button>
-            </div>
-
-            <div id="map"></div>
+        
+                <div id="map"></div>
+                
+                <div class="filtros-titulo">🔎 Filtrar por tipo de resíduo</div>
+                
+                <div id="filtros">
+                    <button data-filtro="todos" onclick="filtrarPontos('todos')">Todos</button>
+                    <button data-filtro="reciclaveis" onclick="filtrarPontos('reciclaveis')">
+                        ♻️ Recicláveis
+                    </button>
+                    <button data-filtro="eletronicos" onclick="filtrarPontos('eletronicos')">
+                        🔌 Eletrônicos
+                    </button>
+                    <button data-filtro="moveis" onclick="filtrarPontos('moveis')">
+                        🪑 Móveis
+                    </button>
+                    <button data-filtro="entulho" onclick="filtrarPontos('entulho')">
+                        🧱 Entulho
+                    </button>
+                </div>
+                
+                <div class="contador-pontos" id="contador-pontos"> 0 ponto(s) de coleta encontrados </div>
+                <div class="lista-pontos" id="lista-pontos"></div>
 
             <script>
                 var map
@@ -384,92 +482,182 @@ fun MapaScreen(
                 var filtroAtual = 'todos';
                 var marcadoresPontos = [];
 
+                function pontoCombinaComFiltro(ponto){
+                    if(filtroAtual === 'todos'){
+                        return true;
+                    }
+                    
+                    var materiais = (ponto.materiais_aceitos || '').toLowerCase();
+                    
+                    if(
+                        filtroAtual === 'reciclaveis' &&
+                        ( 
+                            materiais.includes('papel') || 
+                            materiais.includes('plástico') || 
+                            materiais.includes('plastico') || 
+                            materiais.includes('vidro') || 
+                            materiais.includes('metal')
+                        )
+                    ) {
+                        return true;
+                    }
+                    
+                    if(
+                        filtroAtual === 'eletronicos' && 
+                        (
+                            materiais.includes('eletrônico') ||   
+                            materiais.includes('eletronico') 
+                        ) 
+                    ) {
+                        return true;
+                    }
+                    
+                    if(
+                        filtroAtual === 'moveis' && 
+                        (
+                            materiais.includes('móveis') ||   
+                            materiais.includes('moveis') 
+                        ) 
+                    ) {
+                        return true;
+                    }
+                    
+                    if(
+                        filtroAtual === 'entulho' && 
+                         materiais.includes('entulho')
+                    ) {
+                        return true;
+                    }
+                    return false;
+                }
+
+                function atualizarCards(pontosFiltrados) {
+
+                    var lista = document.getElementById('lista-pontos');
+
+                    var contador = document.getElementById('contador-pontos');
+
+                    contador.innerText =
+                        pontosFiltrados.length +
+                        ' ponto(s) de coleta encontrados';
+
+                    lista.innerHTML = '';
+
+                    pontosFiltrados.forEach(function(ponto) {
+
+                        var materiais = ponto.materiais_aceitos || 'Não informado';
+
+                        var listaMateriais = materiais
+                            .split(/[,;]+/)
+                            .map(function(material) {
+                                return material.trim();
+                                
+                                if(material.length === 0){
+                                    return '';
+                                }
+                                return material
+                                    .toLowerCase()
+                                    .replace(/\b\w/g, function(letra){
+                                        return letra.toUpperCase();
+                                    });
+                            })
+                            .filter(function(material) {
+                                return material.length > 0;
+                            });
+
+                        var materiaisHtml = '';
+
+                        listaMateriais.forEach(function(material) {
+                            materiaisHtml +=
+                                '<span>' + material + '</span>';
+                        });
+
+                        var classeStatus =
+                            ponto.status === 'Aberto'
+                                ? 'status-aberto'
+                                : 'status-fechado';
+
+                        var card =
+                            '<div class="card-ponto">' +
+
+                                '<div class="topo-ponto">' +
+                                    '<strong>' +
+                                        ponto.nome +
+                                    '</strong>' +
+                                '</div>' +
+
+                                '<div class="status-ponto ' +
+                                    classeStatus +
+                                '">' +
+                                    '● ' +
+                                    ponto.status +
+                                '</div>' +
+
+                                '<div class="materiais">' +
+                                    materiaisHtml +
+                                '</div>' +
+
+                                '<div class="info-ponto">' +
+                                    '🕝 ' +
+                                    (ponto.horario_funcionamento || 'Horário não informado') +
+                                '</div>' +
+
+                                '<button class="botao-como-chegar" onclick="Android.abrirGoogleMaps(' +
+                                    ponto.latitude + ', ' +
+                                    ponto.longitude +
+                                ')">' + 
+                                    '➤ &nbsp; Como Chegar' +
+                                '</button>' +
+
+                            '</div>';
+
+                        lista.innerHTML += card;
+                    });
+                }
+
                 function receberPontos(pontos) {
 
                     pontosRecebidos = pontos;
-
-                    // Remove os marcadores antigos
+                    
                     marcadoresPontos.forEach(function(marcador) {
                         map.removeLayer(marcador);
                     });
 
                     marcadoresPontos = [];
 
+                    var pontosFiltrados = [];
+
                     pontos.forEach(function(ponto) {
-
-                        var materiais = (ponto.materiais_aceitos || '').toLowerCase();
-
-                        var mostrar = false;
-
-                        if (filtroAtual === 'todos') {
-                            mostrar = true;
-                        } 
-                        else if (
-                            filtroAtual === 'reciclaveis' &&
-                            (
-                                materiais.includes('papel') ||
-                                materiais.includes('plástico') ||
-                                materiais.includes('plastico') ||
-                                materiais.includes('vidro') ||
-                                materiais.includes('metal')
-                            )
-                        ) {
-                            mostrar = true;
-                        }
-                        else if (
-                            filtroAtual === 'eletronicos' &&
-                            (
-                                materiais.includes('eletrônico') ||
-                                materiais.includes('eletronico')
-                            )
-                        ) {
-                            mostrar = true;
-                        }
-                        else if (
-                            filtroAtual === 'moveis' &&
-                            (
-                                materiais.includes('móveis') ||
-                                materiais.includes('moveis')
-                            )
-                        ) {
-                            mostrar = true;
-                        }
-                        else if (
-                            filtroAtual === 'entulho' &&
-                            materiais.includes('entulho')
-                        ) {
-                            mostrar = true;
-                        }
-
+                        var mostrar = pontoCombinaComFiltro(ponto);
                         if (mostrar) {
-
+                            pontosFiltrados.push(ponto);
                             var classe = ponto.status === 'Aberto'
                                 ? 'verde'
                                 : 'laranja';
-
                             var icone = L.divIcon({
                                 className: 'marcador-ponto',
                                 html: '<div class="marcador ' + classe + '"></div>',
-                                iconSize: [26, 26],
-                                iconAnchor: [13, 13]
+                                iconSize: [26,26],
+                                iconAnchor: [13,13]
                             });
-
                             var marcador = L.marker(
                                 [ponto.latitude, ponto.longitude],
-                                { icon: icone }
+                                {icon: icone}
                             )
                             .addTo(map)
                             .bindPopup(
                                 '<b>' + ponto.nome + '</b><br>' +
                                 ponto.endereco + '<br><br>' +
                                 '<b>Materiais aceitos:</b><br>' +
-                                (ponto.materiais_aceitos || 'Não informado') + '<br><br>' +
-                                '<b>Status:</b> ' + ponto.status
+                                (ponto.materiais_aceitos || 'Não informado') +
+                                '<br><br>' +
+                                '<b>Status:</b> ' +
+                                ponto.status        
                             );
-
                             marcadoresPontos.push(marcador);
                         }
                     });
+                    atualizarCards(pontosFiltrados)
                 }
                 
                 function filtrarPontos(filtro) {
@@ -564,54 +752,90 @@ fun MapaScreen(
         </html>
     """.trimIndent()
 
-    AndroidView(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(230.dp)
-            .clip(RoundedCornerShape(18.dp)),
-        factory = { context ->
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(paddingValues)
+    ) {
+        Text(
+            text = "Pontos de Coleta",
+            modifier = Modifier.padding(
+                start = 16.dp,
+                top = 16.dp,
+                end = 16.dp
+            ),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
+        )
 
-            WebView(context).apply {
+        Text(
+            text = "Encontre locais próximos para descartar seus resíduos",
+            modifier = Modifier.padding(
+                start = 16.dp,
+                top = 4.dp,
+                end = 16.dp,
+                bottom = 12.dp
+            ),
+            fontSize = 14.sp,
+            color = Color(0xFF4F5B55)
+        )
+        AndroidView(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(500.dp)
+                .clip(RoundedCornerShape(18.dp)),
+            factory = { context ->
 
-                webViewClient = object : WebViewClient(){
-                    override fun onPageFinished(
-                        view: WebView?,
-                        url: String?
-                    ){
-                        super.onPageFinished(view,url)
-                        val json = Gson().toJson(pontos)
-                        evaluateJavascript("receberPontos($json);", null)
+                WebView(context).apply {
+
+                    webViewClient = object : WebViewClient(){
+                        override fun onPageFinished(
+                            view: WebView?,
+                            url: String?
+                        ){
+                            super.onPageFinished(view,url)
+                            val json = Gson().toJson(pontos)
+                            evaluateJavascript("receberPontos($json);", null)
+                        }
                     }
+
+                    settings.javaScriptEnabled = true
+                    settings.domStorageEnabled = true
+
+                    settings.allowFileAccess = true
+                    settings.allowContentAccess = true
+
+                    settings.userAgentString =
+                        "Leafy/1.0 Android App"
+
+                    addJavascriptInterface(object{
+                        @JavascriptInterface
+                        fun abrirGoogleMaps(latitude: Double, longitude: Double){
+                            val uri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude")
+                        val intent = Intent(Intent.ACTION_VIEW, uri)
+                            context.startActivity(intent)
+                        }
+                    }, "Android")
+
+                    loadDataWithBaseURL(
+                        "https://cdn.jsdelivr.net/",
+                        html,
+                        "text/html",
+                        "UTF-8",
+                        null
+                    )
                 }
-
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-
-                settings.allowFileAccess = true
-                settings.allowContentAccess = true
-
-                settings.userAgentString =
-                    "Leafy/1.0 Android App"
-
-                loadDataWithBaseURL(
-                    "https://cdn.jsdelivr.net/",
-                    html,
-                    "text/html",
-                    "UTF-8",
-                    null
-                )
+            },
+            update = { webView ->
+                if (pontos.isNotEmpty()) {
+                    val json = Gson().toJson(pontos)
+                    webView.evaluateJavascript(
+                        "receberPontos($json);", null
+                    )
+                }
+                ultimaLocalizacao.value?.let { localizacao ->
+                    webView.evaluateJavascript("receberLocalizacao(${localizacao.latitude}, ${localizacao.longitude});", null)
+                }
             }
-        },
-        update = { webView ->
-            if (pontos.isNotEmpty()) {
-                val json = Gson().toJson(pontos)
-                webView.evaluateJavascript(
-                    "receberPontos($json);", null
-                )
-            }
-            ultimaLocalizacao.value?.let { localizacao ->
-                webView.evaluateJavascript("receberLocalizacao(${localizacao.latitude}, ${localizacao.longitude});", null)
-            }
-        }
-    )
+        )
+    }
 }
