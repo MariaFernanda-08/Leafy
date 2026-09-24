@@ -101,21 +101,12 @@ fun AppNavigation() {
         composable("scanner") {
             LeafyLayout(
                 rotaAtual = "scanner",
-                onHomeClick = {
-                    navController.navigate("home")
-                },
-                onConsultaClick = {
-                    navController.navigate("consulta")
-                },
+                onHomeClick = {navController.navigate("home")},
+                onConsultaClick = {navController.navigate("consulta")},
                 onScannerClick = { },
-                onMapaClick = {
-                    navController.navigate("mapa")
-                },
-                onEducacaoClick = {
-                    navController.navigate("educacao")
-                }
+                onMapaClick = {navController.navigate("mapa")},
+                onEducacaoClick = {navController.navigate("educacao") }
             ) { paddingValues ->
-
                 ScannerScreen(
                     navController = navController,
                     paddingValues = paddingValues
@@ -124,8 +115,20 @@ fun AppNavigation() {
         }
 
         composable("mapa") {
-            MapaScreen()
+            LeafyLayout(
+                rotaAtual = "mapa",
+                onHomeClick = { navController.navigate("home") },
+                onConsultaClick = { navController.navigate("consulta") },
+                onScannerClick = { navController.navigate("scanner") },
+                onMapaClick = { },
+                onEducacaoClick = { navController.navigate("educacao")}
+            ) { paddingValues ->
+                MapaScreen(
+                    paddingValues = paddingValues
+                )
+            }
         }
+
         composable("educacao") {
             LeafyLayout(
                 rotaAtual = "educacao",
@@ -135,32 +138,21 @@ fun AppNavigation() {
                 onMapaClick = { navController.navigate("mapa") },
                 onEducacaoClick = { }
             ) { paddingValues ->
-
                 EducacaoScreen(
                     paddingValues = paddingValues
                 )
             }
         }
+
         composable("progresso") {
             LeafyLayout(
                 rotaAtual = "progresso",
-                onHomeClick = {
-                    navController.navigate("home")
-                },
-                onConsultaClick = {
-                    navController.navigate("consulta")
-                },
-                onScannerClick = {
-                    navController.navigate("scanner")
-                },
-                onMapaClick = {
-                    navController.navigate("mapa")
-                },
-                onEducacaoClick = {
-                    navController.navigate("educacao")
-                }
+                onHomeClick = {navController.navigate("home")},
+                onConsultaClick = {navController.navigate("consulta")},
+                onScannerClick = {navController.navigate("scanner")},
+                onMapaClick = {navController.navigate("mapa")},
+                onEducacaoClick = {navController.navigate("educacao")}
             ) { paddingValues ->
-
                 ProgressoScreen(
                     paddingValues = paddingValues
                 )

@@ -23,11 +23,18 @@ import android.location.Location
 import android.location.LocationManager
 import android.annotation.SuppressLint
 import android.location.LocationListener
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun MapaScreen(
+    paddingValues: PaddingValues,
     viewModel: PontoColetaViewModel = viewModel()
 ) {
    val pontos by viewModel.pontos.collectAsState()
@@ -108,8 +115,7 @@ fun MapaScreen(
 
                 #map {
                     width: 100%;
-                    height: 100vh;
-                    min-height: 500px;
+                    height: 230px;
                     margin: 0;
                     padding: 0;
                 }
@@ -492,6 +498,10 @@ fun MapaScreen(
                         [-22.1225, -51.3883],
                         13
                     );
+                    
+                    setTimeout(function() {
+                        map.invalidateSize();
+                    }, 300);
 
                     var controleLocalizacao = L.control({
                         position: 'bottomright'
@@ -555,7 +565,10 @@ fun MapaScreen(
     """.trimIndent()
 
     AndroidView(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(230.dp)
+            .clip(RoundedCornerShape(18.dp)),
         factory = { context ->
 
             WebView(context).apply {
