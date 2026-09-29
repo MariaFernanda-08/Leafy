@@ -27,7 +27,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.graphics.Color
-
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun ConsultaScreen(
@@ -38,24 +39,36 @@ fun ConsultaScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp)
     )
     {
         Text(
             text = "Encontre um resíduo",
-            style = MaterialTheme.typography.headlineMedium
+            modifier = Modifier.padding(
+                top = 16.dp
+            ),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF17211C)
         )
 
         Text(
             text = "Pesquise pelo nome do produto ou material para descobrir como descartá-lo corretamente.",
-            style = MaterialTheme.typography.bodyMedium
+            modifier = Modifier.padding(
+                top = 6.dp,
+                bottom = 18.dp
+            ),
+            fontSize = 14.sp,
+            color = Color(0xFF4F5B55)
         )
 
         OutlinedTextField(
             value = viewModel.pesquisa,
             onValueChange = { viewModel.atualizarPesquisa(it) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 18.dp),
             label = {
                 Text("Pesquisar resíduo")
             },
@@ -74,19 +87,26 @@ fun ConsultaScreen(
 
         Text(
             text = "Explore por categoria",
-            style = MaterialTheme.typography.titleMedium
+            modifier = Modifier.padding(bottom = 16.dp),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF17211C)
         )
 
         CategoriaCard(
             emoji = "♻️",
             nome = "Plástico",
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
             selecionado = viewModel.categoriaSelecionada == "Plástico",
             onClick = { viewModel.filtrarPorCategoria("Plástico")}
         )
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             CategoriaCard(
@@ -131,9 +151,12 @@ fun ConsultaScreen(
                 text = "Ver todos os resíduos",
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = 12.dp, bottom = 12.dp)
                     .clickable {
                         viewModel.limparFiltro()
                     },
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
                 style = MaterialTheme.typography.labelLarge
             )
         }

@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun ProgressoScreen(
@@ -35,19 +37,23 @@ fun ProgressoScreen(
             .background(Color(0xFFF4F9F6))
             .verticalScroll(rememberScrollState())
             .padding(paddingValues)
-            .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 
         // TÍTULO
         Text(
             text = "Meu Progresso",
-            style = MaterialTheme.typography.headlineSmall
+            modifier = Modifier.padding(top = 16.dp),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF17211C)
         )
 
         Text(
             text = "Continue cuidando do planeta!🌍",
-            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(top = 2.dp, bottom = 4.dp),
+            fontSize = 14.sp,
             color = Color(0xFF496057)
         )
 
@@ -132,8 +138,6 @@ fun ProgressoScreen(
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(4.dp))
         
         // SEQUÊNCIA DIÁRIA
         Card(
@@ -180,7 +184,7 @@ fun ProgressoScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         // XP
         Card(
@@ -238,7 +242,7 @@ fun ProgressoScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         // NÍVEIS
         Card(
@@ -580,7 +584,10 @@ private fun ConquistaCard(
 
             Text(
                 text = descricao,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 style = MaterialTheme.typography.bodySmall
+
             )
 
             if (desbloqueada) {

@@ -104,7 +104,7 @@ fun ScannerScreen(
 
         Text(
             text = "Scanner de Código de Barras",
-            fontSize = 22.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF17213A)
         )

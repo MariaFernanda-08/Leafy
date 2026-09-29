@@ -781,7 +781,7 @@ fun MapaScreen(
         AndroidView(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(500.dp)
+                .weight(1f)
                 .clip(RoundedCornerShape(18.dp)),
             factory = { context ->
 
@@ -811,7 +811,7 @@ fun MapaScreen(
                         @JavascriptInterface
                         fun abrirGoogleMaps(latitude: Double, longitude: Double){
                             val uri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude")
-                        val intent = Intent(Intent.ACTION_VIEW, uri)
+                            val intent = Intent(Intent.ACTION_VIEW,uri)
                             context.startActivity(intent)
                         }
                     }, "Android")
