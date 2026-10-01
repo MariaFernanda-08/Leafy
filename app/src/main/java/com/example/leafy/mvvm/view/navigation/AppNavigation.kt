@@ -17,6 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.leafy.mvvm.viewmodel.DetalhesResiduoViewModel
 import androidx.compose.runtime.LaunchedEffect
 import com.example.leafy.mvvm.view.components.LeafyLayout
+import com.example.leafy.mvvm.view.screens.autenticacao.CadastroScreen
 
 @Composable
 fun AppNavigation() {
@@ -24,8 +25,20 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "home")
+        startDestination = "cadastro")
     {
+        composable("cadastro") {
+            CadastroScreen(
+                onCadastroSucesso = {
+                    navController.navigate("home"){
+                        popUpTo("cadastro"){
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+
         composable("home") {
 
             LeafyLayout(

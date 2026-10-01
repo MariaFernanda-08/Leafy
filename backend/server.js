@@ -138,6 +138,73 @@ app.get("/pontos-coleta", (req,res) => { //ve os pontos de coleta
     })
 })
 
+// POST
+app.post("/users/cadastro",(req,res) => { // cadastro de usuário
+    const {nome, email, senha} = req.body
+
+    if (!nome || !email || !senha){
+        return res.status(400).json({
+            erro: "Preencha todos os campos"
+        })
+    }
+
+    const sql = `INSERT INTO users (nome, email, senha, xp, nivel) VALUES (?,?,?,0,'Iniciante')`
+
+    connection.query(sql,[nome,email,senha],(error,resultado) => {
+        if (error) {
+            if(error.code === "ER_DUP_ENTRY") {
+                return res.status(409).json({
+                    erro: "Este email já esta cadastrado"
+                })
+            }
+
+            console.error("Erro ao cadastrar usuário:", error)
+
+            return res.status(500).json({
+                erro: "Erro ao cadastrar usuário"
+            })
+        }
+
+        res.status(201).json({
+            mensagem: "Usuário cadastrado com sucesso",
+            id: resultado.insertId
+        })
+    })
+}) 
+
+app.post("/users/login", (req,res) => {
+    const {email,senha} = req.body
+
+    if (!email || !senha){
+        return res.status(400).json({
+            erro: "Informe o email e a senha"
+        })
+    }
+
+    const sql = `SELECT id, nome, email, xp, nivel FROM users WHERE email = ? AND senha = ?`
+
+    connection.query(sql,[email,senha],(error,results) => {
+        if (error){
+            console.error("Erro ao fazer login:", error)
+
+            return res.status(500).json({
+                erro: "Erro ao fazer login"
+            })
+        }
+
+        if (results.length === 0){
+            return res.status(401).json({
+                erro: "Email ou senha incorretos"
+            })
+        }
+
+        res.json({
+            mensagem: "Login realizado com sucesso",
+            usuario: results[0]
+        })
+    })
+})
+
 // PORT
 const PORT = process.env.PORT || 3000
 
