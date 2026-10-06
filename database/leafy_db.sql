@@ -1,1 +1,1 @@
-SELECT * FROM leafy_db.pontos_coleta;
+SELECT * FROM leafy_db.users;
