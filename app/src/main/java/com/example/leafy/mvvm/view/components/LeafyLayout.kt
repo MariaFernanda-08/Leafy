@@ -33,6 +33,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.leafy.R
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material3.IconButton
 
 @Composable
 fun LeafyLayout(
@@ -42,6 +48,8 @@ fun LeafyLayout(
     onScannerClick: () -> Unit,
     onMapaClick: () -> Unit,
     onEducacaoClick: () -> Unit,
+    mostrarSair: Boolean = false,
+    onSairClick: () -> Unit = {},
     conteudo: @Composable (PaddingValues) -> Unit
 ) {
 
@@ -104,6 +112,26 @@ fun LeafyLayout(
                             color = Color.White,
                             style = MaterialTheme.typography.bodySmall
                         )
+                    }
+
+                    if (mostrarSair){
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        IconButton(
+                            onClick = onSairClick,
+                            modifier = Modifier
+                                .size(42.dp)
+                                .background(
+                                    color = Color(0xFF16B86A),
+                                    shape = CircleShape
+                                )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Logout,
+                                contentDescription = "Sair",
+                                tint = Color.White
+                            )
+                        }
                     }
                 }
             }

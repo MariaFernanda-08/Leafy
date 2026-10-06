@@ -181,7 +181,7 @@ app.post("/users/login", (req,res) => {
         })
     }
 
-    const sql = `SELECT id, nome, email, xp, nivel FROM users WHERE email = ? AND senha = ?`
+    const sql = `SELECT id, nome, email, xp, nivel, criado_em FROM users WHERE email = ? AND senha = ?`
 
     connection.query(sql,[email,senha],(error,results) => {
         if (error){
@@ -198,10 +198,7 @@ app.post("/users/login", (req,res) => {
             })
         }
 
-        res.json({
-            mensagem: "Login realizado com sucesso",
-            usuario: results[0]
-        })
+        res.json(results[0])
     })
 })
 

@@ -79,4 +79,10 @@ class UsuarioViewModel : ViewModel() {
         _erro.value = null
         _sucesso.value = null
     }
+
+    fun sair() {
+        _usuario.value = null
+        _erro.value = null
+        _sucesso.value = null
+    }
 }

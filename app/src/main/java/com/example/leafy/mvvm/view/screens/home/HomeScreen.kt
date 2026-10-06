@@ -43,6 +43,41 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.leafy.R
+import com.example.leafy.mvvm.model.data.Usuario
+import java.text.SimpleDateFormat
+import java.util.Locale
+
+fun formatarDataMembro(data: String): String {
+    return try {
+        val formatos = listOf(
+            "yyyy-MM-dd'T'HH:mm:ss",
+            "yyyy-MM-dd HH:mm:ss"
+        )
+
+        val dataConvertida = formatos.firstNotNullOfOrNull { formato ->
+            try {
+                SimpleDateFormat(
+                    formato,
+                    Locale.getDefault()
+                ).parse(data)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        val formatoSaida = SimpleDateFormat(
+            "MMM\nyyyy",
+            Locale("pt", "BR")
+        )
+
+        dataConvertida?.let {
+            formatoSaida.format(it)
+        } ?: "Data desconhecida"
+
+    } catch (e: Exception) {
+        "Data desconhecida"
+    }
+}
 
 @Composable
 fun HomeScreen(
@@ -52,6 +87,7 @@ fun HomeScreen(
     onMapaClick: () -> Unit,
     onEducacaoClick: () -> Unit,
     onProgressoClick: () -> Unit,
+    usuario: com.example.leafy.mvvm.model.data.Usuario?
 ){
 
         LazyColumn(
@@ -111,14 +147,14 @@ fun HomeScreen(
                             ) {
 
                                 Text(
-                                    text = "Usuário\nLeafy",
+                                    text = usuario?.nome ?: "Usuário\nLeafy",
                                     color = Color.White,
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Bold
                                 )
 
                                 Text(
-                                    text = "Membro desde Fev\n2025",
+                                    text = "Membro desde\n${usuario?.criadoEm?.let { formatarDataMembro(it)} ?: "Data desconhecida"}",
                                     color = Color.White,
                                     style = MaterialTheme.typography.bodySmall
                                 )
