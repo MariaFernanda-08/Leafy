@@ -89,7 +89,6 @@ fun HomeScreen(
     onProgressoClick: () -> Unit,
     usuario: com.example.leafy.mvvm.model.data.Usuario?
 ){
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
