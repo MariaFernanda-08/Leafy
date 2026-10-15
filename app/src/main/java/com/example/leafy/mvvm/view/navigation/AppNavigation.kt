@@ -21,6 +21,9 @@ import com.example.leafy.mvvm.view.screens.scanner.ScannerScreen
 import com.example.leafy.mvvm.viewmodel.DetalhesResiduoViewModel
 import com.example.leafy.mvvm.viewmodel.UsuarioViewModel
 import androidx.compose.runtime.LaunchedEffect
+import com.example.leafy.mvvm.view.screens.cadastroResiduo.CadastrarResiduoScreen
+import com.example.leafy.mvvm.view.screens.admin.SugestoesAdminScreen
+import com.example.leafy.mvvm.viewmodel.SugestoesAdminViewModel
 
 @Composable
 fun AppNavigation() {
@@ -48,6 +51,7 @@ fun AppNavigation() {
         composable("cadastro") {
             CadastroScreen(
                 onCadastroSucesso = {
+                    usuarioViewModel.carregarUsuarioAtual()
                     navController.navigate("home") {
                         popUpTo("cadastro") {
                             inclusive = true
@@ -62,6 +66,10 @@ fun AppNavigation() {
 
         composable("home") {
             val usuario = usuarioViewModel.usuario.collectAsState().value
+
+            LaunchedEffect(usuario) {
+                println("Usuário na Home: ${usuario?.nome}")
+            }
 
             LeafyLayout(
                 rotaAtual = "home",
@@ -109,7 +117,10 @@ fun AppNavigation() {
                     onProgressoClick = {
                         navController.navigate("progresso")
                     },
-                    usuario = usuario
+                    usuario = usuario,
+                    onSugestoesAdminClick = {
+                        navController.navigate("sugestoesAdmin")
+                    }
                 )
             }
         }
@@ -190,6 +201,52 @@ fun AppNavigation() {
                         paddingValues = paddingValues
                     )
                 }
+            }
+        }
+
+        composable(
+            route = "cadastrarResiduo/{codigoBarras}",
+            arguments = listOf(
+                navArgument("codigoBarras") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+
+            val codigoBarras = backStackEntry.arguments
+                ?.getString("codigoBarras") ?: ""
+
+            LeafyLayout(
+                rotaAtual = "",
+                onHomeClick = {
+                    navController.navigate("home")
+                },
+                onConsultaClick = {
+                    navController.navigate("consulta")
+                },
+                onScannerClick = {
+                    navController.navigate("scanner")
+                },
+                onMapaClick = {
+                    navController.navigate("mapa")
+                },
+                onEducacaoClick = {
+                    navController.navigate("educacao")
+                }
+            ) { paddingValues ->
+
+                CadastrarResiduoScreen(
+                    codigoBarras = codigoBarras,
+                    paddingValues = paddingValues,
+                    onVoltar = {
+                        navController.navigate("scanner") {
+                            popUpTo("scanner") {
+                                inclusive = false
+                            }
+                            launchSingleTop = true
+                        }
+                    }
+                )
             }
         }
 
@@ -295,6 +352,54 @@ fun AppNavigation() {
                 ProgressoScreen(
                     paddingValues = paddingValues
                 )
+            }
+        }
+
+        composable("sugestoesAdmin") {
+            val usuario = usuarioViewModel.usuario.collectAsState().value
+
+            if (usuario?.tipoUsuario == "admin") {
+                val adminViewModel: SugestoesAdminViewModel = viewModel()
+
+                LeafyLayout(
+                    rotaAtual = "",
+                    onHomeClick = {
+                        navController.navigate("home")
+                    },
+                    onConsultaClick = {
+                        navController.navigate("consulta")
+                    },
+                    onScannerClick = {
+                        navController.navigate("scanner")
+                    },
+                    onMapaClick = {
+                        navController.navigate("mapa")
+                    },
+                    onEducacaoClick = {
+                        navController.navigate("educacao")
+                    }
+                ) { paddingValues ->
+                    SugestoesAdminScreen(
+                        paddingValues = paddingValues,
+                        onVoltar = {
+                            navController.navigate("home") {
+                                popUpTo("home") {
+                                    inclusive = false
+                                }
+                                launchSingleTop = true
+                            }
+                        },
+                        viewModel = adminViewModel
+                    )
+                }
+            } else {
+                LaunchedEffect(Unit) {
+                    navController.navigate("home") {
+                        popUpTo("sugestoesAdmin") {
+                            inclusive = true
+                        }
+                    }
+                }
             }
         }
     }

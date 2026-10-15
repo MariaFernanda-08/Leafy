@@ -10,5 +10,7 @@ data class Usuario(
     val nivel: String,
 
     @SerializedName("criado_em")
-    val criadoEm: String
+    val criadoEm: String,
+
+    val tipoUsuario: String = "usuario"
 )

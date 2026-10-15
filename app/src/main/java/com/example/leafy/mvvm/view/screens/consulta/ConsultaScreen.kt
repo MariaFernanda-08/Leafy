@@ -173,6 +173,7 @@ fun ConsultaScreen(
         } else {
 
             LazyColumn(
+                modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                items(viewModel.resultados) {residuo ->

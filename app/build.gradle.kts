@@ -88,4 +88,9 @@ dependencies {
 
     //ML Kit
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
+
+    // firebase
+    implementation("com.google.firebase:firebase-auth")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 }

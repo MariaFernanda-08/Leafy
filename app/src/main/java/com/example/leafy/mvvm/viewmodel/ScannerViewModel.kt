@@ -1,43 +1,46 @@
 package com.example.leafy.mvvm.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.leafy.mvvm.model.data.Residuo
-import com.example.leafy.mvvm.model.repository.ResiduoRepository
-import com.example.leafy.mvvm.remote.RetrofitClient
-import kotlinx.coroutines.launch
 import android.util.Log
+import androidx.lifecycle.ViewModel
+import com.example.leafy.mvvm.model.data.Residuo
+import com.example.leafy.mvvm.model.repository.ResiduoFirebaseRepository
 
 class ScannerViewModel : ViewModel() {
-    private val repository = ResiduoRepository(RetrofitClient.api)
+
+    private val repository = ResiduoFirebaseRepository()
 
     fun buscarCodigo(
-        codigo:String,
-        onResultado: (Residuo?) -> Unit)
-    {
-        viewModelScope.launch {
-            try {
-                Log.d("LEAFY_API", "Buscando código: $codigo")
+        codigo: String,
+        onResultado: (Residuo?) -> Unit
+    ) {
+        Log.d("LEAFY_SCANNER", "Buscando código no Firebase: $codigo")
 
-                val residuo = repository.buscarPorCodigo(codigo)
-
-                Log.d(
-                    "LEAFY_API",
-                    "Produto encontrado: ${residuo.nome}, ID: ${residuo.id}"
-                )
+        repository.buscarPorCodigo(
+            codigo = codigo,
+            onSuccess = { residuo ->
+                if (residuo != null) {
+                    Log.d(
+                        "LEAFY_SCANNER",
+                        "Produto encontrado: ${residuo.nome}, ID: ${residuo.id}"
+                    )
+                } else {
+                    Log.d(
+                        "LEAFY_SCANNER",
+                        "Nenhum produto encontrado para o código: $codigo"
+                    )
+                }
 
                 onResultado(residuo)
-
-            } catch (e: Exception) {
-
+            },
+            onError = { erro ->
                 Log.e(
-                    "LEAFY_API",
-                    "Erro ao buscar produto",
-                    e
+                    "LEAFY_SCANNER",
+                    "Erro ao buscar produto no Firebase",
+                    erro
                 )
 
                 onResultado(null)
-        }
-        }
+            }
+        )
     }
 }

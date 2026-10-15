@@ -155,7 +155,6 @@ fun ScannerScreen(
                             viewModel.buscarCodigo(codigo) { residuo ->
 
                                 if (residuo != null) {
-
                                     Log.d(
                                         "LEAFY_SCANNER",
                                         "Navegando para detalhes/${residuo.id}"
@@ -166,10 +165,12 @@ fun ScannerScreen(
                                     )
 
                                 } else {
-
                                     Log.d(
                                         "LEAFY_SCANNER",
                                         "Produto não encontrado no banco"
+                                    )
+                                    navController.navigate(
+                                        "cadastrarResiduo/$codigo"
                                     )
                                 }
                             }

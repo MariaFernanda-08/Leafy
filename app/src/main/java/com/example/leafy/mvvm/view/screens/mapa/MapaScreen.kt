@@ -51,53 +51,118 @@ fun MapaScreen(
    }
 
     val context = LocalContext.current
-    var locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-    val ultimaLocalizacao = remember { mutableStateOf<Location?>(null)}
+    val locationManager =
+        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+    val ultimaLocalizacao = remember {
+        mutableStateOf<Location?>(null)
+    }
+
     val locationListener = remember {
         LocationListener { location ->
             ultimaLocalizacao.value = location
         }
     }
 
-    LaunchedEffect(Unit) {
-        if (
+    fun iniciarLocalizacao() {
+        val temPermissaoFina =
             ContextCompat.checkSelfPermission(
-                context,Manifest.permission.ACCESS_FINE_LOCATION
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                1000L,
-                1f,
-                locationListener
+
+        val temPermissaoAproximada =
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+
+        if (!temPermissaoFina && !temPermissaoAproximada) {
+            return
+        }
+
+        try {
+            val ultimaConhecida = try {
+                locationManager.getLastKnownLocation(
+                    LocationManager.NETWORK_PROVIDER
+                ) ?: locationManager.getLastKnownLocation(
+                    LocationManager.GPS_PROVIDER
+                )
+            } catch (e: Exception) {
+                null
+            }
+
+            if (ultimaConhecida != null) {
+                ultimaLocalizacao.value = ultimaConhecida
+            }
+
+            // Continua buscando atualizações da localização.
+            if (locationManager.isProviderEnabled(
+                    LocationManager.NETWORK_PROVIDER
+                )
+            ) {
+                locationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER,
+                    1000L,
+                    1f,
+                    locationListener
+                )
+            }
+
+            if (locationManager.isProviderEnabled(
+                    LocationManager.GPS_PROVIDER
+                )
+            ) {
+                locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    1000L,
+                    1f,
+                    locationListener
+                )
+            }
+        } catch (e: SecurityException) {
+            android.util.Log.e(
+                "LEAFY_MAPA",
+                "Sem permissão para acessar a localização",
+                e
             )
         }
     }
 
-    val permissaoLocalizacao = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
-    {
-        permissoes ->
+    val permissaoLocalizacao =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissoes ->
+
             val permitida =
                 permissoes[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
                         permissoes[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-            if (permitida){
 
+            if (permitida) {
+                iniciarLocalizacao()
             }
-    }
+        }
 
     LaunchedEffect(Unit) {
         val temPermissao =
             ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        if (!temPermissao){
+            ) == PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+
+        if (temPermissao) {
+            iniciarLocalizacao()
+        } else {
             permissaoLocalizacao.launch(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
             )
         }
     }
@@ -487,46 +552,37 @@ fun MapaScreen(
                         return true;
                     }
                     
-                    var materiais = (ponto.materiais_aceitos || '').toLowerCase();
+                    var materiais = (ponto.materiais_aceitos || '')
+                        .toLowerCase()
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g,'');
                     
-                    if(
-                        filtroAtual === 'reciclaveis' &&
-                        ( 
-                            materiais.includes('papel') || 
-                            materiais.includes('plástico') || 
-                            materiais.includes('plastico') || 
-                            materiais.includes('vidro') || 
-                            materiais.includes('metal')
-                        )
-                    ) {
-                        return true;
+                    if(filtroAtual === 'reciclaveis') {
+                        return(
+                            materiais.includes('recicl') ||
+                            materiais.includes('papel') ||
+                            materiais.includes('plastico') ||
+                            materiais.includes('vidro') ||
+                            materiais.includes('metal') ||
+                            materiais.includes('papelao')    
+                        );
                     }
                     
-                    if(
-                        filtroAtual === 'eletronicos' && 
-                        (
-                            materiais.includes('eletrônico') ||   
-                            materiais.includes('eletronico') 
-                        ) 
-                    ) {
-                        return true;
+                    if(filtroAtual === 'eletronicos')
+                    {
+                        return materiais.includes('eletronico');
                     }
                     
-                    if(
-                        filtroAtual === 'moveis' && 
-                        (
-                            materiais.includes('móveis') ||   
-                            materiais.includes('moveis') 
-                        ) 
-                    ) {
-                        return true;
+                    if(filtroAtual === 'moveis') 
+                    {
+                        return materiais.includes('movel') ||
+                               materiais.includes('moveis');;
                     }
                     
-                    if(
-                        filtroAtual === 'entulho' && 
-                         materiais.includes('entulho')
-                    ) {
-                        return true;
+                    if( filtroAtual === 'entulho') 
+                    {
+                        return materiais.includes('entulho') ||
+                               materiais.includes('construcao');;
                     }
                     return false;
                 }
@@ -787,14 +843,49 @@ fun MapaScreen(
 
                 WebView(context).apply {
 
-                    webViewClient = object : WebViewClient(){
+
+                    webViewClient = object : WebViewClient() {
                         override fun onPageFinished(
                             view: WebView?,
                             url: String?
-                        ){
-                            super.onPageFinished(view,url)
+                        ) {
+                            super.onPageFinished(view, url)
+
                             val json = Gson().toJson(pontos)
-                            evaluateJavascript("receberPontos($json);", null)
+
+                            view?.evaluateJavascript(
+                                """
+                                (function() {
+                                    if (typeof L === 'undefined') {
+                                        console.error('Leaflet não carregou.');
+                                        return 'LEAFLET_NAO_CARREGOU';
+                                    }
+                    
+                                    if (typeof receberPontos !== 'function') {
+                                        console.error('Função receberPontos não encontrada.');
+                                        return 'FUNCAO_NAO_ENCONTRADA';
+                                    }
+                    
+                                    receberPontos($json);
+                                    return 'OK';
+                                })();
+                                """.trimIndent()
+                                                ) { resultado ->
+                                                    android.util.Log.d("LEAFY_MAPA", "Resultado JS: $resultado")
+                                                }
+                                            }
+
+                        override fun onReceivedError(
+                            view: WebView?,
+                            request: android.webkit.WebResourceRequest?,
+                            error: android.webkit.WebResourceError?
+                        ) {
+                            super.onReceivedError(view, request, error)
+
+                            android.util.Log.e(
+                                "LEAFY_MAPA",
+                                "Erro WebView: ${error?.description}"
+                            )
                         }
                     }
 

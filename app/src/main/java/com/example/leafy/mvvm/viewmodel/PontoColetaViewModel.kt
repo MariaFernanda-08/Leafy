@@ -5,14 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.leafy.mvvm.model.data.PontoColeta
 import com.example.leafy.mvvm.model.repository.PontoColetaRepository
-import com.example.leafy.mvvm.remote.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class PontoColetaViewModel : ViewModel(){
-    private val repository =
-        PontoColetaRepository(RetrofitClient.api)
+    private val repository = PontoColetaRepository()
     private val _pontos = MutableStateFlow<List<PontoColeta>>(emptyList())
     val pontos: StateFlow<List<PontoColeta>> = _pontos
 

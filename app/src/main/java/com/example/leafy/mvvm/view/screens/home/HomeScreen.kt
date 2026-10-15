@@ -1,6 +1,6 @@
 package com.example.leafy.mvvm.view.screens.home
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,31 +21,80 @@ import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.leafy.R
+import androidx.compose.ui.unit.sp
 import com.example.leafy.mvvm.model.data.Usuario
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
+
+private data class NivelHome(
+    val emoji: String,
+    val nome: String,
+    val descricao: String,
+    val xpMinimo: Int,
+    val xpProximo: Int?
+)
+
+private val niveisHome = listOf(
+    NivelHome(
+        "🐜",
+        "Formiga Operária",
+        "Pequenas ações, grandes resultados.",
+        0,
+        100
+    ),
+    NivelHome(
+        "🦫",
+        "Castor Engenheiro",
+        "Construindo soluções sustentáveis.",
+        100,
+        300
+    ),
+    NivelHome(
+        "🐺",
+        "Lobo Guardião",
+        "Protetor da alcateia e do território.",
+        300,
+        600
+    ),
+    NivelHome(
+        "🦅",
+        "Condor dos Andes",
+        "Visão ampla sobre o planeta.",
+        600,
+        1000
+    ),
+    NivelHome(
+        "🐢",
+        "Tartaruga Milenar",
+        "Sabedoria e preservação dos mares.",
+        1000,
+        1500
+    ),
+    NivelHome(
+        "🐦‍🔥",
+        "Fênix",
+        "A Terra renascendo das cinzas.",
+        1500,
+        null
+    )
+)
 
 fun formatarDataMembro(data: String): String {
     return try {
@@ -87,232 +136,245 @@ fun HomeScreen(
     onMapaClick: () -> Unit,
     onEducacaoClick: () -> Unit,
     onProgressoClick: () -> Unit,
-    usuario: com.example.leafy.mvvm.model.data.Usuario?
-){
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFF4F9F6))
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp),
-            contentPadding = PaddingValues(
-                top = 16.dp,
-                bottom = 16.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(18.dp)
-        ) {
+    usuario: Usuario?,
+    onSugestoesAdminClick: () -> Unit = {}
+) {
+    val xpAtual = (usuario?.xp ?: 0).coerceAtLeast(0)
 
-            item {
+    val nivelAtual = niveisHome.lastOrNull {
+        xpAtual >= it.xpMinimo
+    } ?: niveisHome.first()
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF08BD73)
-                    )
+    val indiceNivel = niveisHome.indexOf(nivelAtual)
+
+    val progressoNivel = if (nivelAtual.xpProximo != null) {
+        (
+                (xpAtual - nivelAtual.xpMinimo).toFloat() /
+                        (nivelAtual.xpProximo - nivelAtual.xpMinimo)
+                ).coerceIn(0f, 1f)
+    } else {
+        1f
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF4F9F6))
+            .padding(paddingValues)
+            .padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(
+            top = 16.dp,
+            bottom = 16.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(18.dp)
+    ) {
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF08BD73)
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp)
                 ) {
-
-                    Column(
-                        modifier = Modifier.padding(20.dp)
+                    // PERFIL DO USUÁRIO
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                            Card(
-                                modifier = Modifier.size(58.dp),
-                                shape = CircleShape,
-                                colors = CardDefaults.cardColors(
-                                    containerColor = Color(0xFF4DD99B)
-                                )
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Person,
-                                    contentDescription = "Usuário",
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(13.dp),
-                                    tint = Color(0xFF5A2D82)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.size(14.dp))
-
-                            Column(
-                                modifier = Modifier.weight(1f)
-                            ) {
-
-                                Text(
-                                    text = usuario?.nome ?: "Usuário\nLeafy",
-                                    color = Color.White,
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                                Text(
-                                    text = "Membro desde\n${usuario?.criadoEm?.let { formatarDataMembro(it)} ?: "Data desconhecida"}",
-                                    color = Color.White,
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            }
-
-                            Button(
-                                onClick = onProgressoClick,
-                                shape = RoundedCornerShape(10.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF20C783),
-                                    contentColor = Color.White
-                                ),
-                                elevation = ButtonDefaults.buttonElevation(
-                                    defaultElevation = 0.dp
-                                )
-                            ) {
-                                Text(
-                                    text = "Ver Tudo",
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
                         Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(14.dp),
+                            modifier = Modifier.size(58.dp),
+                            shape = CircleShape,
                             colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFF20C783)
+                                containerColor = Color(0xFF4DD99B)
                             )
                         ) {
-
-                            Column(
-                                modifier = Modifier.padding(16.dp)
-                            ) {
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-
-                                    Text(
-                                        text = "🦫",
-                                        style = MaterialTheme.typography.headlineMedium
-                                    )
-
-                                    Spacer(modifier = Modifier.size(12.dp))
-
-                                    Column(
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-
-                                        Text(
-                                            text = "Castor",
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Bold
-                                        )
-
-                                        Text(
-                                            text = "Engenheiro",
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Bold
-                                        )
-
-                                        Text(
-                                            text = "Nível 2",
-                                            color = Color.White,
-                                            style = MaterialTheme.typography.bodySmall
-                                        )
-                                    }
-
-                                    Column(
-                                        horizontalAlignment = Alignment.End
-                                    ) {
-
-                                        Text(
-                                            text = "245",
-                                            color = Color.White,
-                                            style = MaterialTheme.typography.headlineSmall,
-                                            fontWeight = FontWeight.Bold
-                                        )
-
-                                        Text(
-                                            text = "XP",
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Bold
-                                        )
-
-                                        Text(
-                                            text = "de 300 XP",
-                                            color = Color.White,
-                                            style = MaterialTheme.typography.bodySmall
-                                        )
-                                    }
-                                }
-
-                                Spacer(modifier = Modifier.height(10.dp))
-
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(10.dp),
-                                    shape = RoundedCornerShape(10.dp),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = Color(0xFF087F50)
-                                    )
-                                ) {
-
-                                    Card(
-                                        modifier = Modifier
-                                            .fillMaxWidth(0.82f)
-                                            .fillMaxSize(),
-                                        shape = RoundedCornerShape(10.dp),
-                                        colors = CardDefaults.cardColors(
-                                            containerColor = Color(0xFFFFC107)
-                                        )
-                                    ) {}
-                                }
-                            }
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Usuário",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(13.dp),
+                                tint = Color(0xFF5A2D82)
+                            )
                         }
 
-                        Spacer(modifier = Modifier.height(14.dp))
+                        Spacer(modifier = Modifier.size(14.dp))
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        Column(
+                            modifier = Modifier.weight(1f)
                         ) {
-
-                            EstatisticaCard(
-                                valor = "5",
-                                texto = "Conquistas",
-                                modifier = Modifier.weight(1f)
+                            Text(
+                                text = usuario?.nome ?: "Usuário Leafy",
+                                color = Color.White,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold
                             )
 
-                            EstatisticaCard(
-                                valor = "7",
-                                texto = "Dias Seguidos",
-                                modifier = Modifier.weight(1f)
+                            Text(
+                                text = "Membro desde\n" +
+                                        (usuario?.criadoEm?.let {
+                                            formatarDataMembro(it)
+                                        } ?: "Data desconhecida"),
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodySmall
                             )
+                        }
 
-                            EstatisticaCard(
-                                valor = "12",
-                                texto = "Contribuições",
-                                modifier = Modifier.weight(1f)
+                        Button(
+                            onClick = onProgressoClick,
+                            contentPadding = PaddingValues(
+                                horizontal = 12.dp,
+                                vertical = 8.dp
+                            ),
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF20C783),
+                                contentColor = Color.White
+                            ),
+                            elevation = ButtonDefaults.buttonElevation(
+                                defaultElevation = 0.dp
+                            )
+                        ) {
+                            Text(
+                                text = "Ver Tudo",
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // NÍVEL E XP REAIS
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF20C783)
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = nivelAtual.emoji,
+                                    style = MaterialTheme.typography.headlineMedium
+                                )
+
+                                Spacer(modifier = Modifier.size(12.dp))
+
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = nivelAtual.nome,
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+
+                                    Text(
+                                        text = "Nível ${indiceNivel + 1}",
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+
+                                Column(
+                                    horizontalAlignment = Alignment.End
+                                ) {
+                                    Text(
+                                        text = "$xpAtual",
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                    Text(
+                                        text = "XP",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                    Text(
+                                        text = nivelAtual.xpProximo?.let {
+                                            "de $it XP"
+                                        } ?: "Nível máximo",
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            LinearProgressIndicator(
+                                progress = { progressoNivel },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(10.dp),
+                                color = Color(0xFFFFC107),
+                                trackColor = Color(0xFF087F50)
+                            )
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Text(
+                                text = if (nivelAtual.xpProximo != null) {
+                                    "${(progressoNivel * 100).toInt()}% do nível atual"
+                                } else {
+                                    "Você alcançou o nível máximo!"
+                                },
+                                modifier = Modifier.align(Alignment.End),
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // INDICADORES REAIS
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        EstatisticaCard(
+                            valor = "$xpAtual",
+                            texto = "XP total",
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        EstatisticaCard(
+                            valor = "${indiceNivel + 1}/6",
+                            texto = "Nível",
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        EstatisticaCard(
+                            valor = "${(progressoNivel * 100).toInt()}%",
+                            texto = "Progresso",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
+        }
 
+        // ATALHO EXCLUSIVO DO ADMINISTRADOR
+        if (usuario?.tipoUsuario == "admin") {
             item {
-
                 Column(
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 ) {
-
                     Text(
-                        text = "Ações Rápidas",
+                        text = "Área Administrativa",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF17201B)
@@ -321,49 +383,74 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     AcaoRapidaCard(
-                        titulo = "Consultar Resíduo",
-                        descricao = "Descubra como descartar corretamente",
+                        titulo = "Sugestões dos usuários",
+                        descricao = "Analise e aprove novos resíduos cadastrados",
                         icon = Icons.Default.Eco,
                         cor = Color(0xFFDDF7E8),
-                        onClick = onConsultaClick
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    AcaoRapidaCard(
-                        titulo = "Escanear Símbolo de Reciclagem",
-                        descricao = "Identifique o tipo de plástico pelo triângulo",
-                        icon = Icons.Default.CameraAlt,
-                        cor = Color(0xFFE0EBFF),
-                        onClick = onScannerClick
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    AcaoRapidaCard(
-                        titulo = "Pontos de Coleta",
-                        descricao = "Encontre locais próximos a você",
-                        icon = Icons.Default.LocationOn,
-                        cor = Color(0xFFF0E3FF),
-                        onClick = onMapaClick
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    AcaoRapidaCard(
-                        titulo = "Educação Ambiental",
-                        descricao = "Aprenda mais sobre sustentabilidade",
-                        icon = Icons.Default.MenuBook,
-                        cor = Color(0xFFFFF1D6),
-                        onClick = onEducacaoClick
+                        onClick = onSugestoesAdminClick
                     )
                 }
             }
+        }
 
-            item {
+        // AÇÕES RÁPIDAS
+        item {
+            Column(
+                modifier = Modifier.padding(horizontal = 4.dp)
+            ) {
+                Text(
+                    text = "Ações Rápidas",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF17201B)
+                )
+
                 Spacer(modifier = Modifier.height(10.dp))
+
+                AcaoRapidaCard(
+                    titulo = "Consultar Resíduo",
+                    descricao = "Descubra como descartar corretamente",
+                    icon = Icons.Default.Eco,
+                    cor = Color(0xFFDDF7E8),
+                    onClick = onConsultaClick
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                AcaoRapidaCard(
+                    titulo = "Escanear Símbolo de Reciclagem",
+                    descricao = "Identifique o resíduo pelo código de barras",
+                    icon = Icons.Default.CameraAlt,
+                    cor = Color(0xFFE0EBFF),
+                    onClick = onScannerClick
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                AcaoRapidaCard(
+                    titulo = "Pontos de Coleta",
+                    descricao = "Encontre locais de descarte",
+                    icon = Icons.Default.LocationOn,
+                    cor = Color(0xFFF0E3FF),
+                    onClick = onMapaClick
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                AcaoRapidaCard(
+                    titulo = "Educação Ambiental",
+                    descricao = "Aprenda mais sobre sustentabilidade",
+                    icon = Icons.Default.MenuBook,
+                    cor = Color(0xFFFFF1D6),
+                    onClick = onEducacaoClick
+                )
             }
         }
+
+        item {
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+    }
 }
 
 @Composable
@@ -372,7 +459,6 @@ private fun EstatisticaCard(
     texto: String,
     modifier: Modifier = Modifier
 ) {
-
     Card(
         modifier = modifier.height(82.dp),
         shape = RoundedCornerShape(12.dp),
@@ -380,7 +466,6 @@ private fun EstatisticaCard(
             containerColor = Color(0xFF20C783)
         )
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -388,7 +473,6 @@ private fun EstatisticaCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
             Text(
                 text = valor,
                 color = Color.White,
@@ -410,11 +494,10 @@ private fun EstatisticaCard(
 private fun AcaoRapidaCard(
     titulo: String,
     descricao: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     cor: Color,
     onClick: () -> Unit
 ) {
-
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
@@ -422,19 +505,14 @@ private fun AcaoRapidaCard(
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
-        border = androidx.compose.foundation.BorderStroke(
-            1.dp,
-            cor
-        )
+        border = BorderStroke(1.dp, cor)
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Card(
                 modifier = Modifier.size(44.dp),
                 shape = RoundedCornerShape(12.dp),
@@ -442,7 +520,6 @@ private fun AcaoRapidaCard(
                     containerColor = cor
                 )
             ) {
-
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
@@ -456,7 +533,6 @@ private fun AcaoRapidaCard(
             Spacer(modifier = Modifier.size(14.dp))
 
             Column {
-
                 Text(
                     text = titulo,
                     style = MaterialTheme.typography.titleSmall,

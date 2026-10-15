@@ -26,11 +26,42 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.leafy.mvvm.model.data.Usuario
+import com.example.leafy.mvvm.viewmodel.UsuarioViewModel
 
 @Composable
 fun ProgressoScreen(
     paddingValues: PaddingValues
 ) {
+    val usuarioViewModel: UsuarioViewModel = viewModel()
+    val usuario by usuarioViewModel.usuario.collectAsState()
+
+    LaunchedEffect(Unit) {
+        usuarioViewModel.carregarUsuarioAtual()
+    }
+
+    val xpAtual = usuario?.xp ?: 0
+    val nivelAtual = niveisLeafy.lastOrNull {
+        xpAtual >= it.xpMinimo
+    } ?: niveisLeafy.first()
+
+    val proximoNivel = niveisLeafy.firstOrNull {
+        it.xpMinimo > xpAtual
+    }
+
+    val progressoNivel = if (proximoNivel != null) {
+        (
+                (xpAtual - nivelAtual.xpMinimo).toFloat() /
+                        (proximoNivel.xpMinimo - nivelAtual.xpMinimo)
+                ).coerceIn(0f, 1f)
+    } else {
+        1f
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,7 +106,7 @@ fun ProgressoScreen(
                 ) {
 
                     Text(
-                        text = "🦫",
+                        text = nivelAtual.emoji,
                         style = MaterialTheme.typography.headlineLarge
                     )
 
@@ -83,19 +114,19 @@ fun ProgressoScreen(
                         modifier = Modifier.padding(start = 14.dp)
                     ) {
                         Text(
-                            text = "Castor Engenheiro",
+                            text = nivelAtual.nome,
                             style = MaterialTheme.typography.titleLarge,
                             color = Color(0xFF64159C)
                         )
 
                         Text(
-                            text = "Construindo soluções sustentáveis.",
+                            text = nivelAtual.descricao,
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color(0xFF8B20C7)
                         )
 
                         Text(
-                            text = "Nível 2",
+                            text = "Nível ${niveisLeafy.indexOf(nivelAtual) + 1}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color(0xFF8B20C7)
                         )
@@ -109,20 +140,24 @@ fun ProgressoScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "245 XP",
+                        text = "$xpAtual XP",
                         style = MaterialTheme.typography.titleSmall,
                         color = Color(0xFF64159C)
                     )
 
                     Text(
-                        text = "Próximo: Lobo Guardião (300 XP)",
+                        text = if (nivelAtual.xpProximo == null) {
+                            "Nível máximo!"
+                        } else {
+                            "Próximo: ${niveisLeafy[niveisLeafy.indexOf(nivelAtual) + 1].nome} (${nivelAtual.xpProximo} XP)"
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         color = Color(0xFF8B20C7)
                     )
                 }
 
                 LinearProgressIndicator(
-                    progress = { 0.73f },
+                    progress = {progressoNivel},
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(10.dp),
@@ -131,7 +166,7 @@ fun ProgressoScreen(
                 )
 
                 Text(
-                    text = "73%",
+                    text = "${(progressoNivel * 100).toInt()}%",
                     modifier = Modifier.align(Alignment.End),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color(0xFF64159C)
@@ -210,7 +245,7 @@ fun ProgressoScreen(
 
                 AcaoXpCard(
                     emoji = "☆",
-                    titulo = "Cadastrar Produtos",
+                    titulo = "Cadastrar produtos",
                     descricao = "Sugira novos produtos",
                     xp = "+5 XP",
                     cor = Color(0xFFDCEAFF)
@@ -218,8 +253,8 @@ fun ProgressoScreen(
 
                 AcaoXpCard(
                     emoji = "♧",
-                    titulo = "Cadastrar Lixeiras",
-                    descricao = "Ajude a mapear locais",
+                    titulo = "Procurar produtos",
+                    descricao = "Consulte informações sobre resíduos",
                     xp = "+10 XP",
                     cor = Color(0xFFDDF3E7)
                 )
@@ -227,15 +262,15 @@ fun ProgressoScreen(
                 AcaoXpCard(
                     emoji = "🏆",
                     titulo = "Confirmar Informações",
-                    descricao = "Valide dados de outros usuários",
-                    xp = "+15 XP / -15 XP",
+                    descricao = "Validação verdadeira dos dados enviados",
+                    xp = "+15 XP",
                     cor = Color(0xFFF0DEFF)
                 )
 
                 AcaoXpCard(
                     emoji = "📈",
                     titulo = "Usar Diariamente",
-                    descricao = "Mantenha sua sequência ativa",
+                    descricao = "Mantenha sua participação ativa",
                     xp = "+20 XP",
                     cor = Color(0xFFFFF0C7)
                 )
@@ -266,57 +301,25 @@ fun ProgressoScreen(
                     thickness = 1.dp
                 )
 
-                NivelCard(
-                    emoji = "🐜",
-                    nome = "Formiga Operária",
-                    descricao = "Pequenas ações, grandes resultados.",
-                    xp = "0 - 99 XP",
-                    atual = false,
-                )
+                niveisLeafy.forEach { nivel ->
+                    val faixaXp = if (nivel.xpProximo != null) {
+                        "${nivel.xpMinimo} - ${nivel.xpProximo - 1} XP"
+                    } else {
+                        "${nivel.xpMinimo}+ XP"
+                    }
 
-                NivelCard(
-                    emoji = "🦫",
-                    nome = "Castor Engenheiro",
-                    descricao = "Construindo soluções sustentáveis.",
-                    xp = "100 - 299 XP",
-                    atual = true
-                )
-
-                NivelCard(
-                    emoji = "🐺",
-                    nome = "Lobo Guardião",
-                    descricao = "Protetor da alcateia e do território.",
-                    xp = "300 - 599 XP",
-                    atual = false
-                )
-
-                NivelCard(
-                    emoji = "🦅",
-                    nome = "Condor dos Andes",
-                    descricao = "Visão ampla sobre o planeta.",
-                    xp = "600 - 999 XP",
-                    atual = false
-                )
-
-                NivelCard(
-                    emoji = "🐢",
-                    nome = "Tartaruga Milenar",
-                    descricao = "Sabedoria e preservação dos mares.",
-                    xp = "1000 - 1999 XP",
-                    atual = false
-                )
-
-                NivelCard(
-                    emoji = "🔥",
-                    nome = "Fênix",
-                    descricao = "A Terra renascendo das cinzas.",
-                    xp = "2000 - ∞ XP",
-                    atual = false
-                )
+                    NivelCard(
+                        emoji = nivel.emoji,
+                        nome = nivel.nome,
+                        descricao = nivel.descricao,
+                        xp = faixaXp,
+                        atual = nivel.nome == nivelAtual.nome
+                    )
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         // CONQUISTAS
         Card(
@@ -355,15 +358,15 @@ fun ProgressoScreen(
                         emoji = "🌱",
                         titulo = "Primeiro Passo",
                         descricao = "Cadastre seu primeiro produto",
-                        desbloqueada = true,
+                        desbloqueada = false,
                         modifier = Modifier.weight(1f)
                     )
 
                     ConquistaCard(
                         emoji = "🗺️",
                         titulo = "Explorador",
-                        descricao = "Cadastre 5 lixeiras",
-                        desbloqueada = true,
+                        descricao = "Cadastre 5 produtos",
+                        desbloqueada = false,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -375,8 +378,8 @@ fun ProgressoScreen(
 
                     ConquistaCard(
                         emoji = "🔒",
-                        titulo = "Verificador",
-                        descricao = "Confirme 10 informações",
+                        titulo = "Ajudante",
+                        descricao = "Cadastre 10 produtos",
                         desbloqueada = false,
                         modifier = Modifier.weight(1f)
                     )
@@ -385,7 +388,7 @@ fun ProgressoScreen(
                         emoji = "🔥",
                         titulo = "Persistente",
                         descricao = "Use o app por 7 dias seguidos",
-                        desbloqueada = true,
+                        desbloqueada = false,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -399,14 +402,14 @@ fun ProgressoScreen(
                         emoji = "🛡️",
                         titulo = "Guardião Verde",
                         descricao = "Atinja 100 XP",
-                        desbloqueada = true,
+                        desbloqueada = xpAtual >= 100,
                         modifier = Modifier.weight(1f)
                     )
 
                     ConquistaCard(
-                        emoji = "🔒",
+                        emoji = "♻️",
                         titulo = "Reciclador Mestre",
-                        descricao = "Escaneie 50 símbolos",
+                        descricao = "Consulte 50 produtos",
                         desbloqueada = false,
                         modifier = Modifier.weight(1f)
                     )
@@ -414,7 +417,7 @@ fun ProgressoScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -519,7 +522,7 @@ private fun NivelCard(
 
                     if (atual) {
                         Text(
-                            text = "  ATUAL",
+                            text = " ATUAL",
                             style = MaterialTheme.typography.labelSmall,
                             color = Color(0xFF8B20C7)
                         )
@@ -602,3 +605,56 @@ private fun ConquistaCard(
         }
     }
 }
+
+private data class NivelLeafy(
+    val emoji: String,
+    val nome: String,
+    val descricao: String,
+    val xpMinimo: Int,
+    val xpProximo: Int?
+)
+
+private val niveisLeafy = listOf(
+    NivelLeafy(
+        "🐜",
+        "Formiga Operária",
+        "Pequenas ações, grandes resultados.",
+        0,
+        100
+    ),
+    NivelLeafy(
+        "🦫",
+        "Castor Engenheiro",
+        "Construindo soluções sustentáveis.",
+        100,
+        300
+    ),
+    NivelLeafy(
+        "🐺",
+        "Lobo Guardião",
+        "Protetor da alcateia e do território.",
+        300,
+        600
+    ),
+    NivelLeafy(
+        "🦅",
+        "Condor dos Andes",
+        "Visão ampla sobre o planeta.",
+        600,
+        1000
+    ),
+    NivelLeafy(
+        "🐢",
+        "Tartaruga Milenar",
+        "Sabedoria e preservação dos mares.",
+        1000,
+        1500
+    ),
+    NivelLeafy(
+        "🐦‍🔥",
+        "Fênix",
+        "A Terra renascendo das cinzas.",
+        1500,
+        null
+    )
+)
