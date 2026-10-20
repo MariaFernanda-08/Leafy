@@ -161,28 +161,7 @@ fun CadastroScreen(
             verticalArrangement = Arrangement.Top
         ) {
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = Color(0xFFF0FFF7),
-                        shape = RoundedCornerShape(13.dp)
-                    )
-                    .padding(
-                        horizontal = 14.dp,
-                        vertical = 12.dp
-                    )
-            ) {
-                Text(
-                    text = "✦   Ganhe 500 XP de boas-vindas ao criar sua conta!",
-                    color = verdeEscuro,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-
             Spacer(modifier = Modifier.height(18.dp))
-
         
         OutlinedTextField(
             value = nome, 

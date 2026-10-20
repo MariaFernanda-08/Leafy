@@ -7,6 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.leafy.mvvm.model.data.Residuo
 import com.example.leafy.mvvm.model.repository.ResiduoFirebaseRepository
+import java.text.Normalizer
+import java.util.Locale
 
 class ConsultaViewModel : ViewModel() {
 
@@ -21,6 +23,14 @@ class ConsultaViewModel : ViewModel() {
     var categoriaSelecionada by mutableStateOf<String?>(null)
         private set
 
+    private fun normalizar(texto: String): String {
+        return Normalizer
+            .normalize(texto, Normalizer.Form.NFD)
+            .replace("\\p{Mn}+".toRegex(), "")
+            .lowercase(Locale.ROOT)
+            .trim()
+    }
+
     fun atualizarPesquisa(texto: String) {
         pesquisa = texto
         categoriaSelecionada = null
@@ -30,15 +40,23 @@ class ConsultaViewModel : ViewModel() {
             return
         }
 
+        val termo = normalizar(texto)
+
         repository.buscarResiduos(
             onSuccess = { residuos ->
-                resultados = residuos.filter {
-                    it.nome.contains(texto, ignoreCase = true)
+                resultados = residuos.filter { residuo ->
+                    normalizar(residuo.nome).contains(termo) ||
+                            normalizar(residuo.tipo).contains(termo) ||
+                            normalizar(residuo.codigoBarras.orEmpty()).contains(termo)
                 }
             },
             onError = { erro ->
                 resultados = emptyList()
-                Log.e("LEAFY_FIREBASE", "Erro ao buscar resíduos", erro)
+                Log.e(
+                    "LEAFY_FIREBASE",
+                    "Erro ao buscar resíduos",
+                    erro
+                )
             }
         )
     }
@@ -46,8 +64,8 @@ class ConsultaViewModel : ViewModel() {
     fun filtrarPorCategoria(categoria: String) {
         repository.buscarResiduos(
             onSuccess = { residuos ->
-                resultados = residuos.filter {
-                    it.tipo.equals(categoria, ignoreCase = true)
+                resultados = residuos.filter { residuo ->
+                    normalizar(residuo.tipo) == normalizar(categoria)
                 }
 
                 pesquisa = categoria
@@ -55,7 +73,11 @@ class ConsultaViewModel : ViewModel() {
             },
             onError = { erro ->
                 resultados = emptyList()
-                Log.e("LEAFY_FIREBASE", "Erro ao filtrar resíduos", erro)
+                Log.e(
+                    "LEAFY_FIREBASE",
+                    "Erro ao filtrar resíduos",
+                    erro
+                )
             }
         )
     }

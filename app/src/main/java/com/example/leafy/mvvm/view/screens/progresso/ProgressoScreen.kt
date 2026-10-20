@@ -15,22 +15,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.leafy.mvvm.model.data.Usuario
 import com.example.leafy.mvvm.viewmodel.UsuarioViewModel
 
 @Composable
@@ -38,13 +37,19 @@ fun ProgressoScreen(
     paddingValues: PaddingValues
 ) {
     val usuarioViewModel: UsuarioViewModel = viewModel()
+
     val usuario by usuarioViewModel.usuario.collectAsState()
+    val sequenciaDias by usuarioViewModel.sequenciaDias.collectAsState()
+    val sugestoesEnviadas by usuarioViewModel.sugestoesEnviadas.collectAsState()
+    val consultasRealizadas by usuarioViewModel.consultasRealizadas.collectAsState()
 
     LaunchedEffect(Unit) {
         usuarioViewModel.carregarUsuarioAtual()
+        usuarioViewModel.carregarQuantidadeConsultas()
     }
 
     val xpAtual = usuario?.xp ?: 0
+
     val nivelAtual = niveisLeafy.lastOrNull {
         xpAtual >= it.xpMinimo
     } ?: niveisLeafy.first()
@@ -149,7 +154,11 @@ fun ProgressoScreen(
                         text = if (nivelAtual.xpProximo == null) {
                             "Nível máximo!"
                         } else {
-                            "Próximo: ${niveisLeafy[niveisLeafy.indexOf(nivelAtual) + 1].nome} (${nivelAtual.xpProximo} XP)"
+                            "Próximo: ${
+                                niveisLeafy[
+                                    niveisLeafy.indexOf(nivelAtual) + 1
+                                ].nome
+                            } (${nivelAtual.xpProximo} XP)"
                         },
                         style = MaterialTheme.typography.bodySmall,
                         color = Color(0xFF8B20C7)
@@ -157,7 +166,7 @@ fun ProgressoScreen(
                 }
 
                 LinearProgressIndicator(
-                    progress = {progressoNivel},
+                    progress = { progressoNivel },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(10.dp),
@@ -173,7 +182,7 @@ fun ProgressoScreen(
                 )
             }
         }
-        
+
         // SEQUÊNCIA DIÁRIA
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -205,7 +214,11 @@ fun ProgressoScreen(
                     )
 
                     Text(
-                        text = "7 dias consecutivos usando o app!",
+                        text = if (sequenciaDias == 1) {
+                            "1 dia consecutivo usando o app!"
+                        } else {
+                            "$sequenciaDias dias consecutivos usando o app!"
+                        },
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color(0xFFB84A25)
                     )
@@ -354,19 +367,21 @@ fun ProgressoScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
 
+                    // PRIMEIRO PASSO
                     ConquistaCard(
                         emoji = "🌱",
                         titulo = "Primeiro Passo",
                         descricao = "Cadastre seu primeiro produto",
-                        desbloqueada = false,
+                        desbloqueada = sugestoesEnviadas >= 1,
                         modifier = Modifier.weight(1f)
                     )
 
+                    // EXPLORADOR
                     ConquistaCard(
                         emoji = "🗺️",
                         titulo = "Explorador",
                         descricao = "Cadastre 5 produtos",
-                        desbloqueada = false,
+                        desbloqueada = sugestoesEnviadas >= 5,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -376,19 +391,21 @@ fun ProgressoScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
 
+                    // AJUDANTE
                     ConquistaCard(
                         emoji = "🔒",
                         titulo = "Ajudante",
                         descricao = "Cadastre 10 produtos",
-                        desbloqueada = false,
+                        desbloqueada = sugestoesEnviadas >= 10,
                         modifier = Modifier.weight(1f)
                     )
 
+                    // PERSISTENTE
                     ConquistaCard(
                         emoji = "🔥",
                         titulo = "Persistente",
                         descricao = "Use o app por 7 dias seguidos",
-                        desbloqueada = false,
+                        desbloqueada = sequenciaDias >= 7,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -398,6 +415,7 @@ fun ProgressoScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
 
+                    // GUARDIÃO VERDE
                     ConquistaCard(
                         emoji = "🛡️",
                         titulo = "Guardião Verde",
@@ -406,11 +424,12 @@ fun ProgressoScreen(
                         modifier = Modifier.weight(1f)
                     )
 
+                    // RECICLADOR MESTRE
                     ConquistaCard(
                         emoji = "♻️",
                         titulo = "Reciclador Mestre",
                         descricao = "Consulte 50 produtos",
-                        desbloqueada = false,
+                        desbloqueada = consultasRealizadas >= 50,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -590,7 +609,6 @@ private fun ConquistaCard(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 style = MaterialTheme.typography.bodySmall
-
             )
 
             if (desbloqueada) {

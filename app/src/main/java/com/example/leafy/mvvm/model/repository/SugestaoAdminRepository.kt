@@ -2,6 +2,7 @@ package com.example.leafy.mvvm.model.repository
 
 import com.example.leafy.mvvm.model.data.SugestaoResiduo
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -9,6 +10,10 @@ class SugestaoAdminRepository {
 
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
+
+    companion object {
+        private const val XP_POR_SUGESTAO = 5
+    }
 
     suspend fun buscarPendentes(): List<SugestaoResiduo> {
         verificarLogin()
@@ -50,50 +55,31 @@ class SugestaoAdminRepository {
             .collection("sugestoes_residuos")
             .document(sugestao.id)
 
-        // Confere se o código de barras já existe.
-        val duplicado = firestore
-            .collection("residuos")
-            .whereEqualTo("codigoBarras", sugestao.codigoBarras)
+        val residuosRef = firestore.collection("residuos")
+        val usuarioAdmin = auth.currentUser
+            ?: throw IllegalStateException("É necessário entrar na conta.")
+
+        val duplicado = residuosRef
+            .whereEqualTo("codigoBarras", sugestao.codigoBarras.trim())
             .limit(1)
             .get()
             .await()
 
-        if (!duplicado.isEmpty) {
-            throw IllegalStateException(
-                "Já existe um resíduo com esse código de barras."
-            )
+        check(duplicado.isEmpty) {
+            "Já existe um resíduo com esse código de barras."
         }
 
-        // Obtém o próximo ID numérico usado pelo aplicativo.
-        val residuosSnapshot = firestore
-            .collection("residuos")
-            .get()
-            .await()
+        val todosResiduos = residuosRef.get().await()
 
-        val proximoId = (residuosSnapshot.documents
-            .mapNotNull { documento ->
-                (documento.get("id") as? Number)?.toInt()
-                    ?: documento.getString("id")?.toIntOrNull()
-            }
-            .maxOrNull() ?: 0) + 1
+        val proximoId = (
+                todosResiduos.documents.mapNotNull { doc ->
+                    (doc.get("id") as? Number)?.toInt()
+                        ?: doc.getString("id")?.toIntOrNull()
+                }.maxOrNull() ?: 0
+                ) + 1
 
-        val residuoRef = firestore
-            .collection("residuos")
-            .document()
-
-        val dadosResiduo = hashMapOf<String, Any>(
-            "id" to proximoId,
-            "nome" to sugestao.nome,
-            "codigoBarras" to sugestao.codigoBarras,
-            "tipo" to sugestao.tipo,
-            "instrucoesDescarte" to sugestao.instrucoesDescarte,
-            "reciclavel" to sugestao.reciclavel,
-            "tempoDecomposicao" to sugestao.tempoDecomposicao,
-            "impactoAmbiental" to sugestao.impactoAmbiental
-        )
-
-        // O cadastro e a aprovação acontecem juntos.
         firestore.runTransaction { transacao ->
+
             val documento = transacao.get(sugestaoRef)
 
             check(documento.exists()) {
@@ -104,8 +90,70 @@ class SugestaoAdminRepository {
                 "Esta sugestão já foi analisada."
             }
 
+            val codigoBarras =
+                documento.getString("codigoBarras")?.trim().orEmpty()
+
+            check(codigoBarras.isNotBlank()) {
+                "A sugestão não possui código de barras."
+            }
+
+            val usuarioId = documento.getString("usuarioId").orEmpty()
+
+            check(usuarioId.isNotBlank()) {
+                "Não foi possível identificar quem enviou a sugestão."
+            }
+
+            val usuarioRef = firestore
+                .collection("usuarios")
+                .document(usuarioId)
+
+            val usuarioDocumento = transacao.get(usuarioRef)
+
+            check(usuarioDocumento.exists()) {
+                "O perfil do usuário que enviou a sugestão não foi encontrado."
+            }
+
+            val residuoRef = residuosRef.document()
+
+            val dadosResiduo = hashMapOf<String, Any>(
+                "id" to proximoId,
+                "nome" to (documento.getString("nome") ?: "").trim(),
+                "codigoBarras" to codigoBarras,
+                "tipo" to (documento.getString("tipo") ?: "").trim(),
+                "instrucoesDescarte" to
+                        (documento.getString("instrucoesDescarte") ?: "").trim(),
+                "reciclavel" to (documento.getBoolean("reciclavel") ?: false),
+                "tempoDecomposicao" to
+                        (documento.getString("tempoDecomposicao") ?: "").trim(),
+                "impactoAmbiental" to
+                        (documento.getString("impactoAmbiental") ?: "").trim()
+            )
+
+            val xpAtual = usuarioDocumento.getLong("xp")?.toInt() ?: 0
+            val novoXp = xpAtual + XP_POR_SUGESTAO
+
             transacao.set(residuoRef, dadosResiduo)
-            transacao.update(sugestaoRef, "status", "aprovada")
+
+            transacao.update(
+                sugestaoRef,
+                mapOf(
+                    "status" to "aprovada",
+                    "xpConcedido" to true,
+                    "xpConcedidoValor" to XP_POR_SUGESTAO,
+                    "aprovadaEm" to FieldValue.serverTimestamp(),
+                    "aprovadaPor" to usuarioAdmin.uid
+                )
+            )
+
+            transacao.update(
+                usuarioRef,
+                mapOf(
+                    "xp" to novoXp,
+                    "nivel" to nivelPorXp(novoXp)
+                )
+            )
+
+            null
         }.await()
     }
 
@@ -127,8 +175,28 @@ class SugestaoAdminRepository {
                 "Esta sugestão já foi analisada."
             }
 
-            transacao.update(referencia, "status", "rejeitada")
+            transacao.update(
+                referencia,
+                mapOf(
+                    "status" to "rejeitada",
+                    "analisadaEm" to FieldValue.serverTimestamp(),
+                    "analisadaPor" to auth.currentUser!!.uid
+                )
+            )
+
+            null
         }.await()
+    }
+
+    private fun nivelPorXp(xp: Int): String {
+        return when {
+            xp < 100 -> "Formiga Operária"
+            xp < 300 -> "Castor Engenheiro"
+            xp < 600 -> "Lobo Guardião"
+            xp < 1000 -> "Condor dos Andes"
+            xp < 1500 -> "Tartaruga Milenar"
+            else -> "Fênix"
+        }
     }
 
     private fun verificarLogin() {

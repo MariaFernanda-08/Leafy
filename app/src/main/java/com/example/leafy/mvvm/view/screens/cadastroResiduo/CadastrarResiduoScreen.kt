@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -45,6 +46,24 @@ fun CadastrarResiduoScreen(
     var enviando by remember { mutableStateOf(false) }
     var enviado by remember { mutableStateOf(false) }
     var mensagemErro by remember { mutableStateOf("") }
+    var tentativaEnvio by remember { mutableStateOf(false) }
+
+    val codigoValido = codigoBarras.isNotBlank()
+    val nomeValido = nome.isNotBlank()
+    val tipoValido = tipo.isNotBlank()
+    val instrucoesValidas = instrucoes.isNotBlank()
+    val decomposicaoValida = decomposicao.isNotBlank()
+    val impactoValido = impacto.isNotBlank()
+    val reciclavelValido = reciclavel != null
+
+    val formularioValido =
+        codigoValido &&
+                nomeValido &&
+                tipoValido &&
+                instrucoesValidas &&
+                decomposicaoValida &&
+                impactoValido &&
+                reciclavelValido
 
     Column(
         modifier = Modifier
@@ -55,29 +74,42 @@ fun CadastrarResiduoScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "Ajude a cadastrar este produto! 🌱",
+            text = "Ajude a cadastrar este produto!",
             fontSize = 23.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF00A968)
         )
 
         Text(
-            text = "Não encontramos esse código no Leafy. Preencha as informações para sugerir o cadastro."
+            text = "Não encontramos esse código no Leafy. Preencha todos os campos obrigatórios para sugerir o cadastro."
         )
 
         OutlinedTextField(
             value = codigoBarras,
             onValueChange = {},
-            label = { Text("Código de barras") },
+            label = { Text("Código de barras *") },
             modifier = Modifier.fillMaxWidth(),
-            readOnly = true
+            readOnly = true,
+            isError = tentativaEnvio && !codigoValido,
+            supportingText = {
+                if (tentativaEnvio && !codigoValido) {
+                    Text("Código de barras obrigatório.")
+                }
+            }
         )
 
         OutlinedTextField(
             value = nome,
             onValueChange = { nome = it },
             label = { Text("Nome do produto ou material *") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !enviando && !enviado,
+            isError = tentativaEnvio && !nomeValido,
+            supportingText = {
+                if (tentativaEnvio && !nomeValido) {
+                    Text("Informe o nome do produto.")
+                }
+            }
         )
 
         OutlinedTextField(
@@ -85,7 +117,14 @@ fun CadastrarResiduoScreen(
             onValueChange = { tipo = it },
             label = { Text("Tipo de resíduo *") },
             placeholder = { Text("Ex.: Plástico, Papel, Vidro") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !enviando && !enviado,
+            isError = tentativaEnvio && !tipoValido,
+            supportingText = {
+                if (tentativaEnvio && !tipoValido) {
+                    Text("Informe o tipo de resíduo.")
+                }
+            }
         )
 
         Text(
@@ -101,7 +140,7 @@ fun CadastrarResiduoScreen(
                 onClick = { reciclavel = true },
                 modifier = Modifier.weight(1f),
                 enabled = !enviando && !enviado,
-                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+                colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = if (reciclavel == true) {
                         Color(0xFF00A968)
                     } else {
@@ -121,7 +160,7 @@ fun CadastrarResiduoScreen(
                 onClick = { reciclavel = false },
                 modifier = Modifier.weight(1f),
                 enabled = !enviando && !enviado,
-                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+                colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = if (reciclavel == false) {
                         Color(0xFFD94848)
                     } else {
@@ -138,41 +177,77 @@ fun CadastrarResiduoScreen(
             }
         }
 
+        if (tentativaEnvio && !reciclavelValido) {
+            Text(
+                text = "Selecione Sim ou Não.",
+                color = Color.Red,
+                fontSize = 12.sp
+            )
+        }
+
         OutlinedTextField(
             value = instrucoes,
             onValueChange = { instrucoes = it },
             label = { Text("Como deve ser descartado? *") },
             modifier = Modifier.fillMaxWidth(),
-            minLines = 3
+            minLines = 3,
+            enabled = !enviando && !enviado,
+            isError = tentativaEnvio && !instrucoesValidas,
+            supportingText = {
+                if (tentativaEnvio && !instrucoesValidas) {
+                    Text("Informe as instruções de descarte.")
+                }
+            }
         )
 
         OutlinedTextField(
             value = decomposicao,
             onValueChange = { decomposicao = it },
-            label = { Text("Tempo de decomposição") },
+            label = { Text("Tempo de decomposição *") },
             placeholder = { Text("Ex.: Cerca de 450 anos") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !enviando && !enviado,
+            isError = tentativaEnvio && !decomposicaoValida,
+            supportingText = {
+                if (tentativaEnvio && !decomposicaoValida) {
+                    Text("Informe o tempo de decomposição.")
+                }
+            }
         )
 
         OutlinedTextField(
             value = impacto,
             onValueChange = { impacto = it },
-            label = { Text("Impacto ambiental") },
+            label = { Text("Impacto ambiental *") },
             modifier = Modifier.fillMaxWidth(),
-            minLines = 3
+            minLines = 3,
+            enabled = !enviando && !enviado,
+            isError = tentativaEnvio && !impactoValido,
+            supportingText = {
+                if (tentativaEnvio && !impactoValido) {
+                    Text("Informe o impacto ambiental.")
+                }
+            }
         )
 
         Text(
-            text = "* Campos obrigatórios",
+            text = "* Todos os campos são obrigatórios.",
             fontSize = 12.sp
         )
 
         Button(
             onClick = {
+                tentativaEnvio = true
+                mensagemErro = ""
+
+                if (!formularioValido) {
+                    mensagemErro = "Preencha todos os campos obrigatórios."
+                    return@Button
+                }
+
                 val reciclavelEscolhido = reciclavel ?: return@Button
 
                 enviando = true
-                mensagemErro = ""
 
                 repository.enviarSugestao(
                     codigoBarras = codigoBarras,
@@ -185,6 +260,7 @@ fun CadastrarResiduoScreen(
                     onSuccess = {
                         enviando = false
                         enviado = true
+                        mensagemErro = ""
                     },
                     onError = { erro ->
                         enviando = false
@@ -194,12 +270,7 @@ fun CadastrarResiduoScreen(
                 )
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = nome.isNotBlank() &&
-                    tipo.isNotBlank() &&
-                    instrucoes.isNotBlank() &&
-                    reciclavel != null &&
-                    !enviando &&
-                    !enviado
+            enabled = !enviando && !enviado
         ) {
             Text(
                 text = when {
@@ -210,17 +281,17 @@ fun CadastrarResiduoScreen(
             )
         }
 
-        if (enviado) {
-            Text(
-                text = "Obrigado por contribuir com o Leafy! Sua sugestão foi enviada para análise.",
-                color = Color(0xFF00864A)
-            )
-        }
-
         if (mensagemErro.isNotBlank()) {
             Text(
                 text = mensagemErro,
                 color = Color.Red
+            )
+        }
+
+        if (enviado) {
+            Text(
+                text = "Obrigado por contribuir com o Leafy! Sua sugestão foi enviada para análise.",
+                color = Color(0xFF00864A)
             )
         }
 

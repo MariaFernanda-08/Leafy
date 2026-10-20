@@ -1,5 +1,6 @@
 package com.example.leafy.mvvm.model.repository
 
+import android.util.Log
 import com.example.leafy.mvvm.model.data.Residuo
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -16,17 +17,30 @@ class ResiduoFirebaseRepository {
             .addOnSuccessListener { documentos ->
 
                 val residuos = documentos.documents.map { documento ->
+
+                    val nomeProduto =
+                        documento.getString("nome") ?: ""
+
+                    val instrucao =
+                        documento.getString("instrucoesDescarte")
+
+                    // Depuração das instruções recebidas do Firebase
+                    Log.d(
+                        "LEAFY_DEBUG",
+                        "Produto: $nomeProduto | Instrução: $instrucao"
+                    )
+
                     Residuo(
-                        id = when(val valorId = documento.get("id")){
+                        id = when (val valorId = documento.get("id")) {
                             is Number -> valorId.toInt()
                             is String -> valorId.toIntOrNull() ?: 0
                             else -> 0
                         },
-                        nome = documento.getString("nome") ?: "",
-                        codigoBarras = documento.getString("codigoBarras"),
+                        nome = nomeProduto,
+                        codigoBarras =
+                        documento.getString("codigoBarras"),
                         tipo = documento.getString("tipo") ?: "",
-                        instrucoesDescarte =
-                        documento.getString("instrucoesDescarte") ?: "",
+                        instrucoesDescarte = instrucao ?: "",
                         reciclavel =
                         documento.getBoolean("reciclavel") ?: false,
                         tempoDecomposicao =
@@ -45,6 +59,11 @@ class ResiduoFirebaseRepository {
                 onSuccess(residuos)
             }
             .addOnFailureListener { erro ->
+                Log.e(
+                    "LEAFY_DEBUG",
+                    "Erro ao buscar resíduos no Firebase",
+                    erro
+                )
                 onError(erro)
             }
     }
@@ -58,6 +77,7 @@ class ResiduoFirebaseRepository {
             .whereEqualTo("codigoBarras", codigo)
             .get()
             .addOnSuccessListener { documentos ->
+
                 val documento = documentos.documents.firstOrNull()
 
                 if (documento == null) {
@@ -65,17 +85,29 @@ class ResiduoFirebaseRepository {
                     return@addOnSuccessListener
                 }
 
+                val nomeProduto =
+                    documento.getString("nome") ?: ""
+
+                val instrucao =
+                    documento.getString("instrucoesDescarte")
+
+                Log.d(
+                    "LEAFY_DEBUG",
+                    "Busca por código | Produto: $nomeProduto | " +
+                            "Instrução: $instrucao"
+                )
+
                 val residuo = Residuo(
                     id = when (val valorId = documento.get("id")) {
                         is Number -> valorId.toInt()
                         is String -> valorId.toIntOrNull() ?: 0
                         else -> 0
                     },
-                    nome = documento.getString("nome") ?: "",
-                    codigoBarras = documento.getString("codigoBarras"),
+                    nome = nomeProduto,
+                    codigoBarras =
+                    documento.getString("codigoBarras"),
                     tipo = documento.getString("tipo") ?: "",
-                    instrucoesDescarte =
-                    documento.getString("instrucoesDescarte") ?: "",
+                    instrucoesDescarte = instrucao ?: "",
                     reciclavel =
                     documento.getBoolean("reciclavel") ?: false,
                     tempoDecomposicao =
@@ -93,6 +125,11 @@ class ResiduoFirebaseRepository {
                 onSuccess(residuo)
             }
             .addOnFailureListener { erro ->
+                Log.e(
+                    "LEAFY_DEBUG",
+                    "Erro ao buscar resíduo pelo código",
+                    erro
+                )
                 onError(erro)
             }
     }

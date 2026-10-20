@@ -1,6 +1,7 @@
 package com.example.leafy.mvvm.view.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -11,6 +12,8 @@ import androidx.navigation.navArgument
 import com.example.leafy.mvvm.view.components.LeafyLayout
 import com.example.leafy.mvvm.view.screens.autenticacao.CadastroScreen
 import com.example.leafy.mvvm.view.screens.autenticacao.LoginScreen
+import com.example.leafy.mvvm.view.screens.autenticacao.TelaCarregamento
+import com.example.leafy.mvvm.view.screens.cadastroResiduo.CadastrarResiduoScreen
 import com.example.leafy.mvvm.view.screens.consulta.ConsultaScreen
 import com.example.leafy.mvvm.view.screens.detalhes.DetalhesResiduoScreen
 import com.example.leafy.mvvm.view.screens.educacao.EducacaoScreen
@@ -18,12 +21,10 @@ import com.example.leafy.mvvm.view.screens.home.HomeScreen
 import com.example.leafy.mvvm.view.screens.mapa.MapaScreen
 import com.example.leafy.mvvm.view.screens.progresso.ProgressoScreen
 import com.example.leafy.mvvm.view.screens.scanner.ScannerScreen
-import com.example.leafy.mvvm.viewmodel.DetalhesResiduoViewModel
-import com.example.leafy.mvvm.viewmodel.UsuarioViewModel
-import androidx.compose.runtime.LaunchedEffect
-import com.example.leafy.mvvm.view.screens.cadastroResiduo.CadastrarResiduoScreen
 import com.example.leafy.mvvm.view.screens.admin.SugestoesAdminScreen
+import com.example.leafy.mvvm.viewmodel.DetalhesResiduoViewModel
 import com.example.leafy.mvvm.viewmodel.SugestoesAdminViewModel
+import com.example.leafy.mvvm.viewmodel.UsuarioViewModel
 
 @Composable
 fun AppNavigation() {
@@ -33,37 +34,66 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "login"
+        startDestination = "inicio"
     ) {
 
+        composable("inicio") {
+
+            LaunchedEffect(Unit) {
+                val sessaoAtiva = usuarioViewModel.restaurarSessao()
+
+                navController.navigate(
+                    if (sessaoAtiva) "home" else "login"
+                ) {
+                    popUpTo("inicio") {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
+            }
+
+            TelaCarregamento()
+        }
+
+        // LOGIN
         composable("login") {
             LoginScreen(
                 viewModel = usuarioViewModel,
+
                 onLoginSucesso = {
-                    navController.navigate("home")
+                    navController.navigate("home") {
+                        popUpTo("login") {
+                            inclusive = true
+                        }
+                    }
                 },
+
                 onCadastroClick = {
                     navController.navigate("cadastro")
                 }
             )
         }
 
+        // CADASTRO
         composable("cadastro") {
             CadastroScreen(
                 onCadastroSucesso = {
                     usuarioViewModel.carregarUsuarioAtual()
+
                     navController.navigate("home") {
                         popUpTo("cadastro") {
                             inclusive = true
                         }
                     }
                 },
+
                 onVoltarLogin = {
                     navController.navigate("login")
                 }
             )
         }
 
+        // HOME
         composable("home") {
             val usuario = usuarioViewModel.usuario.collectAsState().value
 
@@ -73,30 +103,36 @@ fun AppNavigation() {
 
             LeafyLayout(
                 rotaAtual = "home",
-                onHomeClick = {
-                },
+
+                onHomeClick = {},
+
                 onConsultaClick = {
                     navController.navigate("consulta")
                 },
+
                 onScannerClick = {
                     navController.navigate("scanner")
                 },
+
                 onMapaClick = {
                     navController.navigate("mapa")
                 },
+
                 onEducacaoClick = {
                     navController.navigate("educacao")
                 },
+
                 mostrarSair = true,
+
                 onSairClick = {
                     usuarioViewModel.sair()
+
                     navController.navigate("login") {
                         popUpTo("home") {
                             inclusive = true
                         }
                     }
                 }
-
             ) { paddingValues ->
 
                 HomeScreen(
@@ -105,19 +141,25 @@ fun AppNavigation() {
                     onConsultaClick = {
                         navController.navigate("consulta")
                     },
+
                     onScannerClick = {
                         navController.navigate("scanner")
                     },
+
                     onMapaClick = {
                         navController.navigate("mapa")
                     },
+
                     onEducacaoClick = {
                         navController.navigate("educacao")
                     },
+
                     onProgressoClick = {
                         navController.navigate("progresso")
                     },
+
                     usuario = usuario,
+
                     onSugestoesAdminClick = {
                         navController.navigate("sugestoesAdmin")
                     }
@@ -125,21 +167,25 @@ fun AppNavigation() {
             }
         }
 
+        // CONSULTA DE RESÍDUOS
         composable("consulta") {
-
             LeafyLayout(
                 rotaAtual = "consulta",
+
                 onHomeClick = {
                     navController.navigate("home")
                 },
-                onConsultaClick = {
-                },
+
+                onConsultaClick = {},
+
                 onScannerClick = {
                     navController.navigate("scanner")
                 },
+
                 onMapaClick = {
                     navController.navigate("mapa")
                 },
+
                 onEducacaoClick = {
                     navController.navigate("educacao")
                 }
@@ -152,6 +198,7 @@ fun AppNavigation() {
             }
         }
 
+        // DETALHES DO RESÍDUO
         composable(
             route = "detalhes/{residuoId}",
             arguments = listOf(
@@ -167,7 +214,6 @@ fun AppNavigation() {
             val viewModel: DetalhesResiduoViewModel = viewModel()
 
             LaunchedEffect(residuoId) {
-
                 if (residuoId != null) {
                     viewModel.buscarResiduo(residuoId)
                 }
@@ -176,21 +222,25 @@ fun AppNavigation() {
             val residuo = viewModel.residuo
 
             if (residuo != null) {
-
                 LeafyLayout(
                     rotaAtual = "",
+
                     onHomeClick = {
                         navController.navigate("home")
                     },
+
                     onConsultaClick = {
                         navController.navigate("consulta")
                     },
+
                     onScannerClick = {
                         navController.navigate("scanner")
                     },
+
                     onMapaClick = {
                         navController.navigate("mapa")
                     },
+
                     onEducacaoClick = {
                         navController.navigate("educacao")
                     }
@@ -204,6 +254,7 @@ fun AppNavigation() {
             }
         }
 
+        // CADASTRO DE RESÍDUO NÃO ENCONTRADO
         composable(
             route = "cadastrarResiduo/{codigoBarras}",
             arguments = listOf(
@@ -213,23 +264,28 @@ fun AppNavigation() {
             )
         ) { backStackEntry ->
 
-            val codigoBarras = backStackEntry.arguments
-                ?.getString("codigoBarras") ?: ""
+            val codigoBarras =
+                backStackEntry.arguments?.getString("codigoBarras") ?: ""
 
             LeafyLayout(
                 rotaAtual = "",
+
                 onHomeClick = {
                     navController.navigate("home")
                 },
+
                 onConsultaClick = {
                     navController.navigate("consulta")
                 },
+
                 onScannerClick = {
                     navController.navigate("scanner")
                 },
+
                 onMapaClick = {
                     navController.navigate("mapa")
                 },
+
                 onEducacaoClick = {
                     navController.navigate("educacao")
                 }
@@ -238,6 +294,7 @@ fun AppNavigation() {
                 CadastrarResiduoScreen(
                     codigoBarras = codigoBarras,
                     paddingValues = paddingValues,
+
                     onVoltar = {
                         navController.navigate("scanner") {
                             popUpTo("scanner") {
@@ -250,22 +307,25 @@ fun AppNavigation() {
             }
         }
 
+        // SCANNER
         composable("scanner") {
-
             LeafyLayout(
                 rotaAtual = "scanner",
+
                 onHomeClick = {
                     navController.navigate("home")
                 },
+
                 onConsultaClick = {
                     navController.navigate("consulta")
                 },
-                onScannerClick = {
-                },
+
+                onScannerClick = {},
 
                 onMapaClick = {
                     navController.navigate("mapa")
                 },
+
                 onEducacaoClick = {
                     navController.navigate("educacao")
                 }
@@ -278,21 +338,25 @@ fun AppNavigation() {
             }
         }
 
+        // MAPA
         composable("mapa") {
-
             LeafyLayout(
                 rotaAtual = "mapa",
+
                 onHomeClick = {
                     navController.navigate("home")
                 },
+
                 onConsultaClick = {
                     navController.navigate("consulta")
                 },
+
                 onScannerClick = {
                     navController.navigate("scanner")
                 },
-                onMapaClick = {
-                },
+
+                onMapaClick = {},
+
                 onEducacaoClick = {
                     navController.navigate("educacao")
                 }
@@ -304,57 +368,69 @@ fun AppNavigation() {
             }
         }
 
+        // EDUCAÇÃO AMBIENTAL
         composable("educacao") {
-
             LeafyLayout(
                 rotaAtual = "educacao",
+
                 onHomeClick = {
                     navController.navigate("home")
                 },
+
                 onConsultaClick = {
                     navController.navigate("consulta")
                 },
+
                 onScannerClick = {
                     navController.navigate("scanner")
                 },
+
                 onMapaClick = {
                     navController.navigate("mapa")
                 },
-                onEducacaoClick = {
-                }
+
+                onEducacaoClick = {}
             ) { paddingValues ->
+
                 EducacaoScreen(
                     paddingValues = paddingValues
                 )
             }
         }
 
+        // PROGRESSO DO USUÁRIO
         composable("progresso") {
-
             LeafyLayout(
                 rotaAtual = "progresso",
+
                 onHomeClick = {
                     navController.navigate("home")
                 },
+
                 onConsultaClick = {
                     navController.navigate("consulta")
                 },
+
                 onScannerClick = {
                     navController.navigate("scanner")
                 },
+
                 onMapaClick = {
                     navController.navigate("mapa")
                 },
+
                 onEducacaoClick = {
                     navController.navigate("educacao")
                 }
             ) { paddingValues ->
+
                 ProgressoScreen(
                     paddingValues = paddingValues
                 )
             }
         }
 
+        // SUGESTÕES DO ADMINISTRADOR
         composable("sugestoesAdmin") {
             val usuario = usuarioViewModel.usuario.collectAsState().value
 
@@ -363,24 +439,31 @@ fun AppNavigation() {
 
                 LeafyLayout(
                     rotaAtual = "",
+
                     onHomeClick = {
                         navController.navigate("home")
                     },
+
                     onConsultaClick = {
                         navController.navigate("consulta")
                     },
+
                     onScannerClick = {
                         navController.navigate("scanner")
                     },
+
                     onMapaClick = {
                         navController.navigate("mapa")
                     },
+
                     onEducacaoClick = {
                         navController.navigate("educacao")
                     }
                 ) { paddingValues ->
+
                     SugestoesAdminScreen(
                         paddingValues = paddingValues,
+
                         onVoltar = {
                             navController.navigate("home") {
                                 popUpTo("home") {
@@ -389,6 +472,7 @@ fun AppNavigation() {
                                 launchSingleTop = true
                             }
                         },
+
                         viewModel = adminViewModel
                     )
                 }

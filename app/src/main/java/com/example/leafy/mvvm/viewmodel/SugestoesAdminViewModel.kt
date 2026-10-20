@@ -13,14 +13,18 @@ class SugestoesAdminViewModel : ViewModel() {
 
     private val repository = SugestaoAdminRepository()
 
-    private val _sugestoes = MutableStateFlow<List<SugestaoResiduo>>(emptyList())
-    val sugestoes: StateFlow<List<SugestaoResiduo>> = _sugestoes.asStateFlow()
+    private val _sugestoes =
+        MutableStateFlow<List<SugestaoResiduo>>(emptyList())
+    val sugestoes: StateFlow<List<SugestaoResiduo>> =
+        _sugestoes.asStateFlow()
 
     private val _carregando = MutableStateFlow(false)
-    val carregando: StateFlow<Boolean> = _carregando.asStateFlow()
+    val carregando: StateFlow<Boolean> =
+        _carregando.asStateFlow()
 
     private val _mensagem = MutableStateFlow<String?>(null)
-    val mensagem: StateFlow<String?> = _mensagem.asStateFlow()
+    val mensagem: StateFlow<String?> =
+        _mensagem.asStateFlow()
 
     fun carregarPendentes() {
         viewModelScope.launch {
@@ -28,10 +32,11 @@ class SugestoesAdminViewModel : ViewModel() {
             _mensagem.value = null
 
             try {
-                _sugestoes.value = repository.buscarPendentes()
+                atualizarLista()
             } catch (e: Exception) {
                 _mensagem.value =
-                    e.message ?: "Não foi possível carregar as sugestões."
+                    e.message
+                        ?: "Não foi possível carregar as sugestões."
             } finally {
                 _carregando.value = false
             }
@@ -45,11 +50,16 @@ class SugestoesAdminViewModel : ViewModel() {
 
             try {
                 repository.aprovar(sugestao)
-                _mensagem.value = "Sugestão aprovada com sucesso!"
-                carregarPendentes()
+
+                atualizarLista()
+
+                _mensagem.value =
+                    "Sugestão aprovada com sucesso!"
+
             } catch (e: Exception) {
                 _mensagem.value =
-                    e.message ?: "Não foi possível aprovar a sugestão."
+                    e.message
+                        ?: "Não foi possível aprovar a sugestão."
             } finally {
                 _carregando.value = false
             }
@@ -63,15 +73,23 @@ class SugestoesAdminViewModel : ViewModel() {
 
             try {
                 repository.rejeitar(sugestao)
+
+                atualizarLista()
+
                 _mensagem.value = "Sugestão rejeitada."
-                carregarPendentes()
+
             } catch (e: Exception) {
                 _mensagem.value =
-                    e.message ?: "Não foi possível rejeitar a sugestão."
+                    e.message
+                        ?: "Não foi possível rejeitar a sugestão."
             } finally {
                 _carregando.value = false
             }
         }
+    }
+
+    private suspend fun atualizarLista() {
+        _sugestoes.value = repository.buscarPendentes()
     }
 
     fun limparMensagem() {
