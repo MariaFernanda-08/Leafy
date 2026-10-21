@@ -132,7 +132,9 @@ fun ConsultaScreen(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    padding(bottom = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 CategoriaCard(
@@ -162,7 +164,7 @@ fun ConsultaScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            top = 12.dp,
+                            top = 0.dp,
                             bottom = 12.dp
                         )
                         .clickable {
@@ -192,6 +194,19 @@ fun ConsultaScreen(
             viewModel.pesquisa.isNotBlank() &&
             viewModel.resultados.isNotEmpty()
         ) {
+            item {
+                Text(
+                    text = "Resultado da busca",
+                    modifier = Modifier.padding(
+                        top = 8.dp,
+                        bottom = 12.dp
+                    ),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF17211C)
+                )
+            }
+            
             items(viewModel.resultados) { residuo ->
                 ResiduoCard(
                     residuo = residuo,
