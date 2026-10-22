@@ -206,19 +206,6 @@ fun ConsultaScreen(
                     color = Color(0xFF17211C)
                 )
             }
-
-            item {
-                Text(
-                    text = "Resultado da busca",
-                    modifier = Modifier.padding(
-                        top = 8.dp,
-                        bottom = 12.dp
-                    ),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF17211C)
-                )
-            }
             
             items(viewModel.resultados) { residuo ->
                 ResiduoCard(
