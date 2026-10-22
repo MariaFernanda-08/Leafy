@@ -48,21 +48,16 @@ fun CadastrarResiduoScreen(
     var mensagemErro by remember { mutableStateOf("") }
     var tentativaEnvio by remember { mutableStateOf(false) }
 
+    // Apenas os campos que já eram obrigatórios continuam sendo validados.
     val codigoValido = codigoBarras.isNotBlank()
     val nomeValido = nome.isNotBlank()
     val tipoValido = tipo.isNotBlank()
-    val instrucoesValidas = instrucoes.isNotBlank()
-    val decomposicaoValida = decomposicao.isNotBlank()
-    val impactoValido = impacto.isNotBlank()
     val reciclavelValido = reciclavel != null
 
     val formularioValido =
         codigoValido &&
                 nomeValido &&
                 tipoValido &&
-                instrucoesValidas &&
-                decomposicaoValida &&
-                impactoValido &&
                 reciclavelValido
 
     Column(
@@ -81,7 +76,7 @@ fun CadastrarResiduoScreen(
         )
 
         Text(
-            text = "Não encontramos esse código no Leafy. Preencha todos os campos obrigatórios para sugerir o cadastro."
+            text = "Não encontramos esse código no Leafy. Preencha os campos obrigatórios para sugerir o cadastro."
         )
 
         OutlinedTextField(
@@ -188,50 +183,34 @@ fun CadastrarResiduoScreen(
         OutlinedTextField(
             value = instrucoes,
             onValueChange = { instrucoes = it },
-            label = { Text("Como deve ser descartado? *") },
+            label = { Text("Como deve ser descartado") },
+            placeholder = { Text("Opcional") },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
-            enabled = !enviando && !enviado,
-            isError = tentativaEnvio && !instrucoesValidas,
-            supportingText = {
-                if (tentativaEnvio && !instrucoesValidas) {
-                    Text("Informe as instruções de descarte.")
-                }
-            }
+            enabled = !enviando && !enviado
         )
 
         OutlinedTextField(
             value = decomposicao,
             onValueChange = { decomposicao = it },
-            label = { Text("Tempo de decomposição *") },
-            placeholder = { Text("Ex.: Cerca de 450 anos") },
+            label = { Text("Tempo de decomposição") },
+            placeholder = { Text("Ex.: Cerca de 450 anos (opcional)") },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !enviando && !enviado,
-            isError = tentativaEnvio && !decomposicaoValida,
-            supportingText = {
-                if (tentativaEnvio && !decomposicaoValida) {
-                    Text("Informe o tempo de decomposição.")
-                }
-            }
+            enabled = !enviando && !enviado
         )
 
         OutlinedTextField(
             value = impacto,
             onValueChange = { impacto = it },
-            label = { Text("Impacto ambiental *") },
+            label = { Text("Impacto ambiental") },
+            placeholder = { Text("Opcional") },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
-            enabled = !enviando && !enviado,
-            isError = tentativaEnvio && !impactoValido,
-            supportingText = {
-                if (tentativaEnvio && !impactoValido) {
-                    Text("Informe o impacto ambiental.")
-                }
-            }
+            enabled = !enviando && !enviado
         )
 
         Text(
-            text = "* Todos os campos são obrigatórios.",
+            text = "* Campos obrigatórios",
             fontSize = 12.sp
         )
 
@@ -241,7 +220,7 @@ fun CadastrarResiduoScreen(
                 mensagemErro = ""
 
                 if (!formularioValido) {
-                    mensagemErro = "Preencha todos os campos obrigatórios."
+                    mensagemErro = "Preencha os campos obrigatórios."
                     return@Button
                 }
 

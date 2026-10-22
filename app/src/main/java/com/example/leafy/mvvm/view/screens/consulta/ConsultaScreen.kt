@@ -12,11 +12,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -24,8 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.leafy.mvvm.viewmodel.ConsultaViewModel
 import com.example.leafy.mvvm.model.data.Residuo
+import com.example.leafy.mvvm.viewmodel.ConsultaViewModel
 
 @Composable
 fun ConsultaScreen(
@@ -132,7 +135,9 @@ fun ConsultaScreen(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 CategoriaCard(
@@ -162,7 +167,7 @@ fun ConsultaScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            top = 12.dp,
+                            top = 0.dp,
                             bottom = 12.dp
                         )
                         .clickable {
@@ -192,6 +197,19 @@ fun ConsultaScreen(
             viewModel.pesquisa.isNotBlank() &&
             viewModel.resultados.isNotEmpty()
         ) {
+            item {
+                Text(
+                    text = "Resultado da busca",
+                    modifier = Modifier.padding(
+                        top = 8.dp,
+                        bottom = 12.dp
+                    ),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF17211C)
+                )
+            }
+
             items(viewModel.resultados) { residuo ->
                 ResiduoCard(
                     residuo = residuo,
@@ -237,15 +255,14 @@ fun CategoriaCard(
         Color(0xFF263238)
     }
 
-    androidx.compose.material3.Card(
-        modifier = modifier
-            .clickable {
-                onClick()
-            },
-        colors = androidx.compose.material3.CardDefaults.cardColors(
+    Card(
+        modifier = modifier.clickable {
+            onClick()
+        },
+        colors = CardDefaults.cardColors(
             containerColor = backgroundColor
         ),
-        elevation = androidx.compose.material3.CardDefaults.cardElevation(
+        elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
         )
     ) {
@@ -253,7 +270,7 @@ fun CategoriaCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = emoji,
@@ -287,12 +304,14 @@ fun ResiduoCard(
         else -> MaterialTheme.colorScheme.surface
     }
 
-    androidx.compose.material3.Card(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 12.dp)
-            .clickable { onClick() },
-        colors = androidx.compose.material3.CardDefaults.cardColors(
+            .clickable {
+                onClick()
+            },
+        colors = CardDefaults.cardColors(
             containerColor = backgroundColor
         )
     ) {
