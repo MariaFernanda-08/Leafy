@@ -1,5 +1,7 @@
+
 package com.example.leafy.mvvm.view.screens.educacao
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,9 +23,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,14 +33,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-
 data class TipoReciclagem(
     val emoji: String,
     val nome: String,
     val descricao: String,
     val beneficios: List<String>
 )
-
 
 @Composable
 fun EducacaoScreen(
@@ -49,51 +49,46 @@ fun EducacaoScreen(
     }
 
     val tiposReciclagem = listOf(
-
         TipoReciclagem(
             emoji = "♻️",
             nome = "Reciclagem de Plástico",
-            descricao = "O plástico pode ser reciclado e transformado em novos produtos. Cada tipo de plástico possui um número de identificação de 1 a 7.",
+            descricao = "O plástico pode ser reciclado e transformado em novos produtos. Cada tipo possui características próprias.",
             beneficios = listOf(
-                "Reduz a poluição em oceanos e aterros",
-                "Economiza petróleo, utilizado como matéria-prima",
-                "Contribui para a geração de empregos na cadeia de reciclagem"
+                "Reduz a quantidade de resíduos descartados",
+                "Pode economizar matérias-primas",
+                "Contribui para a cadeia da reciclagem"
             )
         ),
-
         TipoReciclagem(
             emoji = "📄",
             nome = "Reciclagem de Papel",
-            descricao = "O papel pode ser reciclado diversas vezes, reduzindo a necessidade de utilizar novas matérias-primas.",
+            descricao = "O papel pode ser reciclado para produzir novos materiais, reduzindo a necessidade de matérias-primas.",
             beneficios = listOf(
-                "Preserva florestas",
-                "Economiza energia na produção",
-                "Reduz o consumo de água"
+                "Ajuda a preservar recursos naturais",
+                "Pode economizar energia na produção",
+                "Reduz a quantidade de resíduos"
             )
         ),
-
         TipoReciclagem(
             emoji = "🥫",
             nome = "Reciclagem de Metal",
-            descricao = "O alumínio pode ser reciclado diversas vezes sem perder suas propriedades.",
+            descricao = "Metais como o alumínio podem ser reciclados diversas vezes, desde que sejam encaminhados corretamente.",
             beneficios = listOf(
-                "Economiza energia em comparação à produção primária",
-                "Reduz a extração de minérios",
-                "Diminui a quantidade de resíduos enviados aos aterros"
+                "Pode economizar energia",
+                "Reduz a necessidade de extrair minérios",
+                "Diminui os resíduos enviados aos aterros"
             )
         ),
-
         TipoReciclagem(
             emoji = "🍾",
             nome = "Reciclagem de Vidro",
-            descricao = "O vidro pode ser reciclado diversas vezes sem perder sua qualidade.",
+            descricao = "O vidro pode ser reciclado várias vezes, desde que seja separado e encaminhado corretamente.",
             beneficios = listOf(
-                "Não perde qualidade durante a reciclagem",
-                "Economiza energia",
-                "Reduz impactos ambientais associados à produção de vidro"
+                "Ajuda a economizar matérias-primas",
+                "Pode reduzir o consumo de energia",
+                "Contribui para a redução de resíduos"
             )
         ),
-
         TipoReciclagem(
             emoji = "🌱",
             nome = "Compostagem (Orgânicos)",
@@ -101,7 +96,7 @@ fun EducacaoScreen(
             beneficios = listOf(
                 "Reduz a quantidade de lixo doméstico",
                 "Produz adubo natural",
-                "Diminui a quantidade de resíduos orgânicos enviados aos aterros"
+                "Diminui os resíduos orgânicos enviados aos aterros"
             )
         )
     )
@@ -113,9 +108,7 @@ fun EducacaoScreen(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-
         item {
-
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
@@ -131,10 +124,9 @@ fun EducacaoScreen(
                 style = MaterialTheme.typography.bodyMedium
             )
         }
-        
-        item { Spacer(modifier = Modifier.height(4.dp)) }
 
         item {
+            Spacer(modifier = Modifier.height(4.dp))
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -142,16 +134,17 @@ fun EducacaoScreen(
                 colors = CardDefaults.cardColors(
                     containerColor = Color(0xFFF0FFF8)
                 ),
-                border = androidx.compose.foundation.BorderStroke(
+                border = BorderStroke(
                     1.dp,
                     Color(0xFF9BE8C5)
                 )
             ) {
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(26.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-
                     Text(
                         text = "♻️  Cores da Coleta Seletiva",
                         style = MaterialTheme.typography.titleLarge,
@@ -161,47 +154,44 @@ fun EducacaoScreen(
                     CorColetaCard(
                         cor = Color(0xFF4169E1),
                         titulo = "Azul - Papel",
-                        exemplo = "Jornais, revistas, caixas de papelão, cadernos"
+                        exemplo = "Jornais, revistas, caixas de papelão e cadernos"
                     )
 
                     CorColetaCard(
                         cor = Color(0xFFED1C24),
                         titulo = "Vermelho - Plástico",
-                        exemplo = "Garrafas PET, embalagens, sacolas plásticas"
+                        exemplo = "Garrafas PET, embalagens e sacolas plásticas"
                     )
 
                     CorColetaCard(
                         cor = Color(0xFF00A651),
                         titulo = "Verde - Vidro",
-                        exemplo = "Garrafas, potes, frascos de vidro"
+                        exemplo = "Garrafas, potes e frascos de vidro"
                     )
 
                     CorColetaCard(
                         cor = Color(0xFFF2B400),
                         titulo = "Amarelo - Metal",
-                        exemplo = "Latas de alumínio, enlatados, tampinhas"
+                        exemplo = "Latas de alumínio, enlatados e tampinhas"
                     )
 
                     CorColetaCard(
                         cor = Color(0xFFC65D00),
                         titulo = "Marrom - Orgânico",
-                        exemplo = "Restos de alimentos, cascas de frutas"
+                        exemplo = "Restos de alimentos e cascas de frutas"
                     )
 
                     CorColetaCard(
                         cor = Color(0xFF596574),
                         titulo = "Cinza - Não Reciclável",
-                        exemplo = "Lixo comum, papel higiênico, fraldas"
+                        exemplo = "Rejeitos como papel higiênico e fraldas"
                     )
                 }
             }
         }
-        
-        item{
-            Spacer(modifier = Modifier.height(22.dp))
-        }
 
         item {
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = "🗑️  Tipos de Reciclagem",
@@ -215,36 +205,33 @@ fun EducacaoScreen(
                 tipo = tipo,
                 aberto = itemAberto == tipo.nome,
                 onClick = {
-                    itemAberto =
-                        if (itemAberto == tipo.nome) {
-                            null
-                        } else {
-                            tipo.nome
-                        }
+                    itemAberto = if (itemAberto == tipo.nome) {
+                        null
+                    } else {
+                        tipo.nome
+                    }
                 }
             )
         }
 
-        item { Spacer(modifier = Modifier.height(22.dp)) }
-
         item {
+            Spacer(modifier = Modifier.height(6.dp))
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.extraLarge,
                 colors = CardDefaults.cardColors(
                     containerColor = Color(0xFFF0FFF8)
                 ),
-                border = androidx.compose.foundation.BorderStroke(
+                border = BorderStroke(
                     1.dp,
                     Color(0xFF9BE8C5)
                 )
             ) {
-
                 Column(
                     modifier = Modifier.padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-
                     Text(
                         text = "🌿  Dicas Sustentáveis",
                         style = MaterialTheme.typography.titleLarge,
@@ -266,7 +253,7 @@ fun EducacaoScreen(
                     DicaCard(
                         emoji = "♻️",
                         titulo = "Recicle",
-                        texto = "Separe corretamente os resíduos e encaminhe-os para reciclagem."
+                        texto = "Separe os resíduos e encaminhe-os para o destino adequado."
                     )
 
                     DicaCard(
@@ -278,43 +265,42 @@ fun EducacaoScreen(
             }
         }
 
-        item{Spacer(modifier = Modifier.height(22.dp))}
-
         item {
+            Spacer(modifier = Modifier.height(6.dp))
 
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "💡  Curiosidades Ambientais",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
 
-                    Text(
-                        text = "💡  Curiosidades Ambientais",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
+                Curiosidade(
+                    emoji = "🦺",
+                    titulo = "Você sabia?",
+                    texto = "Separar corretamente os resíduos facilita o trabalho de coleta e reciclagem."
+                )
 
-                    Curiosidade(
-                        emoji = "🦺",
-                        titulo = "Você sabia?",
-                        texto = "Separar corretamente os resíduos facilita o trabalho de coleta e reciclagem."
-                    )
+                Curiosidade(
+                    emoji = "🌱",
+                    titulo = "Menos lixo, mais recursos",
+                    texto = "A reciclagem permite reaproveitar materiais e reduzir a necessidade de novas matérias-primas."
+                )
 
-                    Curiosidade(
-                        emoji = "🌱",
-                        titulo = "Menos lixo, mais recursos",
-                        texto = "A reciclagem permite que materiais sejam aproveitados novamente, reduzindo a necessidade de novas matérias-primas."
-                    )
-
-                    Curiosidade(
-                        emoji = "♻️",
-                        titulo = "Pequenas atitudes",
-                        texto = "Reduzir, reutilizar e reciclar são atitudes simples que podem contribuir para um consumo mais consciente."
-                    )
-                }
-                Spacer(modifier = Modifier.height(22.dp))
+                Curiosidade(
+                    emoji = "♻️",
+                    titulo = "Pequenas atitudes",
+                    texto = "Reduzir, reutilizar e reciclar contribui para um consumo mais consciente."
+                )
             }
+
+            Spacer(modifier = Modifier.height(22.dp))
         }
     }
+}
 
 @Composable
 private fun CorColetaCard(
@@ -322,34 +308,30 @@ private fun CorColetaCard(
     titulo: String,
     exemplo: String
 ) {
-
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = cor.copy(alpha = 0.12f)
         )
     ) {
-
         Row(
             modifier = Modifier.padding(14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Card(
-                modifier = Modifier
-                    .padding(end = 12.dp),
+                modifier = Modifier.padding(end = 12.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = cor
                 )
             ) {
                 Spacer(
-                    modifier = Modifier
-                        .padding(20.dp)
+                    modifier = Modifier.padding(20.dp)
                 )
             }
 
-            Column {
-
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
                     text = titulo,
                     fontWeight = FontWeight.Bold
@@ -364,14 +346,12 @@ private fun CorColetaCard(
     }
 }
 
-
 @Composable
 private fun TipoReciclagemCard(
     tipo: TipoReciclagem,
     aberto: Boolean,
     onClick: () -> Unit
 ) {
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -379,21 +359,18 @@ private fun TipoReciclagemCard(
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFE1F7FF)
         ),
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             1.dp,
             Color(0xFF166CB1)
         )
     ) {
-
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Text(
                     text = tipo.emoji,
                     modifier = Modifier.padding(end = 8.dp)
@@ -406,19 +383,16 @@ private fun TipoReciclagemCard(
                 )
 
                 Icon(
-                    imageVector = if (aberto)
+                    imageVector = if (aberto) {
                         Icons.Default.KeyboardArrowUp
-                    else
-                        Icons.Default.KeyboardArrowDown,
-                    contentDescription = if (aberto)
-                        "Fechar"
-                    else
-                        "Abrir"
+                    } else {
+                        Icons.Default.KeyboardArrowDown
+                    },
+                    contentDescription = if (aberto) "Fechar" else "Abrir"
                 )
             }
 
             if (aberto) {
-
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
@@ -434,11 +408,43 @@ private fun TipoReciclagemCard(
                 )
 
                 tipo.beneficios.forEach { beneficio ->
-
                     Text(
                         text = "• $beneficio",
                         modifier = Modifier.padding(top = 6.dp),
                         style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                if (tipo.nome == "Reciclagem de Vidro") {
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "Como descartar corretamente?",
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    OrientacaoVidro(
+                        emoji = "♻️",
+                        titulo = "Quais vidros podem ser reciclados?",
+                        texto = "Garrafas, potes e alguns frascos podem ser reciclados. Espelhos, cerâmicas e lâmpadas podem exigir outra destinação."
+                    )
+
+                    OrientacaoVidro(
+                        emoji = "🧼",
+                        titulo = "Antes de descartar",
+                        texto = "Esvazie os recipientes, retire o excesso de resíduos e confira se o ponto de coleta aceita o material."
+                    )
+
+                    OrientacaoVidro(
+                        emoji = "⚠️",
+                        titulo = "Vidro quebrado",
+                        texto = "Não pegue os cacos com as mãos desprotegidas. Coloque-os em uma embalagem resistente, feche-a e identifique: “Cuidado: vidro quebrado”."
+                    )
+
+                    OrientacaoVidro(
+                        emoji = "💡",
+                        titulo = "Importante",
+                        texto = "Nem todo vidro é aceito na coleta seletiva convencional. Consulte as orientações do município ou do ponto de entrega."
                     )
                 }
             }
@@ -446,6 +452,53 @@ private fun TipoReciclagemCard(
     }
 }
 
+@Composable
+private fun OrientacaoVidro(
+    emoji: String,
+    titulo: String,
+    texto: String
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFF0FFF8)
+        ),
+        border = BorderStroke(
+            1.dp,
+            Color(0xFFD5F0E2)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Text(
+                text = emoji,
+                modifier = Modifier.padding(end = 10.dp)
+            )
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = titulo,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF24443A)
+                )
+
+                Text(
+                    text = texto,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
+}
 
 @Composable
 private fun DicaCard(
@@ -453,25 +506,28 @@ private fun DicaCard(
     titulo: String,
     texto: String
 ) {
-
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFFFF)),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFEAF8F0))
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFFFFFFF)
+        ),
+        border = BorderStroke(
+            1.dp,
+            Color(0xFFEAF8F0)
+        )
     ) {
-
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.Top
         ) {
-
             Text(
                 text = emoji,
                 modifier = Modifier.padding(end = 12.dp)
             )
 
-            Column {
-
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
                     text = titulo,
                     fontWeight = FontWeight.Bold
@@ -486,26 +542,45 @@ private fun DicaCard(
     }
 }
 
-
 @Composable
 private fun Curiosidade(
     emoji: String,
     titulo: String,
     texto: String
 ) {
-   Card(modifier = Modifier.fillMaxWidth(),
-       colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFACB)),
-       border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFFEB38))
-   ) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFFFFACB)
+        ),
+        border = BorderStroke(
+            1.dp,
+            Color(0xFFFFEB38)
+        )
+    ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.Top
         ) {
-            Text(text = emoji, modifier = Modifier.padding(end = 12.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(text = titulo, fontWeight = FontWeight.Bold)
-                Text(text = texto, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = emoji,
+                modifier = Modifier.padding(end = 12.dp)
+            )
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = titulo,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = texto,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
-   }
+    }
 }

@@ -76,6 +76,7 @@ class SugestaoResiduoRepository {
 
         firestore.collection("sugestoes_residuos")
             .whereEqualTo("usuarioId", usuario.uid)
+            .whereEqualTo("status", "aprovada")
             .get()
             .addOnSuccessListener { resultado ->
                 onSuccess(resultado.size())

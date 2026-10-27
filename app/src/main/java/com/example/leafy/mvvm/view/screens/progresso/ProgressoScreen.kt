@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -45,7 +46,6 @@ fun ProgressoScreen(
 
     LaunchedEffect(Unit) {
         usuarioViewModel.carregarUsuarioAtual()
-        usuarioViewModel.carregarQuantidadeConsultas()
     }
 
     val xpAtual = usuario?.xp ?: 0
@@ -76,8 +76,6 @@ fun ProgressoScreen(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-
-        // TÍTULO
         Text(
             text = "Meu Progresso",
             modifier = Modifier.padding(top = 16.dp),
@@ -93,13 +91,16 @@ fun ProgressoScreen(
             color = Color(0xFF496057)
         )
 
-        // PROGRESSO
+        // PROGRESSO DO USUÁRIO
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
                 containerColor = Color(0xFFF7EEFF)
             ),
-            shape = RoundedCornerShape(18.dp)
+            shape = RoundedCornerShape(18.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 0.dp
+            )
         ) {
             Column(
                 modifier = Modifier.padding(20.dp),
@@ -109,7 +110,6 @@ fun ProgressoScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Text(
                         text = nivelAtual.emoji,
                         style = MaterialTheme.typography.headlineLarge
@@ -151,14 +151,10 @@ fun ProgressoScreen(
                     )
 
                     Text(
-                        text = if (nivelAtual.xpProximo == null) {
+                        text = if (proximoNivel == null) {
                             "Nível máximo!"
                         } else {
-                            "Próximo: ${
-                                niveisLeafy[
-                                    niveisLeafy.indexOf(nivelAtual) + 1
-                                ].nome
-                            } (${nivelAtual.xpProximo} XP)"
+                            "Próximo: ${proximoNivel.nome} (${proximoNivel.xpMinimo} XP)"
                         },
                         style = MaterialTheme.typography.bodySmall,
                         color = Color(0xFF8B20C7)
@@ -189,7 +185,10 @@ fun ProgressoScreen(
             colors = CardDefaults.cardColors(
                 containerColor = Color(0xFFFFF5EC)
             ),
-            shape = RoundedCornerShape(18.dp)
+            shape = RoundedCornerShape(18.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 0.dp
+            )
         ) {
             Row(
                 modifier = Modifier
@@ -197,7 +196,6 @@ fun ProgressoScreen(
                     .padding(18.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Text(
                     text = "📈",
                     style = MaterialTheme.typography.headlineMedium
@@ -234,13 +232,16 @@ fun ProgressoScreen(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // XP
+        // GANHE XP
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
                 containerColor = Color(0xFFE8F1FC)
             ),
-            shape = RoundedCornerShape(20.dp)
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 0.dp
+            )
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -275,8 +276,8 @@ fun ProgressoScreen(
                 AcaoXpCard(
                     emoji = "🏆",
                     titulo = "Confirmar Informações",
-                    descricao = "Validação verdadeira dos dados enviados",
-                    xp = "+15 XP",
+                    descricao = "Sugestão aprovada pelo administrador",
+                    xp = "+5 XP",
                     cor = Color(0xFFF0DEFF)
                 )
 
@@ -298,7 +299,10 @@ fun ProgressoScreen(
             colors = CardDefaults.cardColors(
                 containerColor = Color(0xFFE8F4EE)
             ),
-            shape = RoundedCornerShape(20.dp)
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 0.dp
+            )
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -321,12 +325,26 @@ fun ProgressoScreen(
                         "${nivel.xpMinimo}+ XP"
                     }
 
+                    // O nível atual é identificado exclusivamente pelo XP.
+                    val eNivelAtual =
+                        xpAtual >= nivel.xpMinimo &&
+                                (nivel.xpProximo == null || xpAtual < nivel.xpProximo)
+
+                    // Um nível só fica concluído quando o usuário já alcançou o seguinte.
+                    val jaAlcancado =
+                        nivel.xpProximo != null &&
+                                xpAtual >= nivel.xpProximo
+
                     NivelCard(
                         emoji = nivel.emoji,
                         nome = nivel.nome,
                         descricao = nivel.descricao,
-                        xp = faixaXp,
-                        atual = nivel.nome == nivelAtual.nome
+                        xp = when {
+                            eNivelAtual -> "$faixaXp • NÍVEL ATUAL"
+                            jaAlcancado -> "$faixaXp • CONCLUÍDO"
+                            else -> faixaXp
+                        },
+                        atual = eNivelAtual
                     )
                 }
             }
@@ -340,22 +358,19 @@ fun ProgressoScreen(
             colors = CardDefaults.cardColors(
                 containerColor = Color(0xFFFFF3D6)
             ),
-            shape = RoundedCornerShape(20.dp)
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 0.dp
+            )
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "🏅 Conquistas",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                }
+                Text(
+                    text = "🏅 Conquistas",
+                    style = MaterialTheme.typography.titleLarge
+                )
 
                 HorizontalDivider(
                     color = Color(0xFFE5DCC5),
@@ -366,21 +381,20 @@ fun ProgressoScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-
-                    // PRIMEIRO PASSO
                     ConquistaCard(
                         emoji = "🌱",
                         titulo = "Primeiro Passo",
-                        descricao = "Cadastre seu primeiro produto",
+                        descricao = "Tenha 1 sugestão aprovada",
+                        progresso = "${sugestoesEnviadas.coerceAtMost(1)}/1 aprovada",
                         desbloqueada = sugestoesEnviadas >= 1,
                         modifier = Modifier.weight(1f)
                     )
 
-                    // EXPLORADOR
                     ConquistaCard(
                         emoji = "🗺️",
                         titulo = "Explorador",
-                        descricao = "Cadastre 5 produtos",
+                        descricao = "Tenha 5 sugestões aprovadas",
+                        progresso = "${sugestoesEnviadas.coerceAtMost(5)}/5 aprovadas",
                         desbloqueada = sugestoesEnviadas >= 5,
                         modifier = Modifier.weight(1f)
                     )
@@ -390,21 +404,20 @@ fun ProgressoScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-
-                    // AJUDANTE
                     ConquistaCard(
                         emoji = "🔒",
                         titulo = "Ajudante",
-                        descricao = "Cadastre 10 produtos",
+                        descricao = "Tenha 10 sugestões aprovadas",
+                        progresso = "${sugestoesEnviadas.coerceAtMost(10)}/10 aprovadas",
                         desbloqueada = sugestoesEnviadas >= 10,
                         modifier = Modifier.weight(1f)
                     )
 
-                    // PERSISTENTE
                     ConquistaCard(
                         emoji = "🔥",
                         titulo = "Persistente",
                         descricao = "Use o app por 7 dias seguidos",
+                        progresso = "${sequenciaDias.coerceAtMost(7)}/7 dias",
                         desbloqueada = sequenciaDias >= 7,
                         modifier = Modifier.weight(1f)
                     )
@@ -414,21 +427,20 @@ fun ProgressoScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-
-                    // GUARDIÃO VERDE
                     ConquistaCard(
                         emoji = "🛡️",
                         titulo = "Guardião Verde",
                         descricao = "Atinja 100 XP",
+                        progresso = "${xpAtual.coerceAtMost(100)}/100 XP",
                         desbloqueada = xpAtual >= 100,
                         modifier = Modifier.weight(1f)
                     )
 
-                    // RECICLADOR MESTRE
                     ConquistaCard(
                         emoji = "♻️",
                         titulo = "Reciclador Mestre",
                         descricao = "Consulte 50 produtos",
+                        progresso = "${consultasRealizadas.coerceAtMost(50)}/50 consultas",
                         desbloqueada = consultasRealizadas >= 50,
                         modifier = Modifier.weight(1f)
                     )
@@ -453,7 +465,10 @@ private fun AcaoXpCard(
         colors = CardDefaults.cardColors(
             containerColor = cor
         ),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 0.dp
+        )
     ) {
         Row(
             modifier = Modifier
@@ -461,7 +476,6 @@ private fun AcaoXpCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Text(
                 text = emoji,
                 style = MaterialTheme.typography.headlineMedium
@@ -503,14 +517,14 @@ private fun NivelCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if (atual) {
-                Color(0xFFF9EEFF)
+                Color(0xFFE1C4FF) // Roxo para o nível atual
             } else {
-                Color(0xFFF0F5F3)
+                Color(0xFFF0F5F3) // Cor normal dos outros níveis
             }
         ),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = if (atual) 3.dp else 0.dp
+            defaultElevation = 0.dp
         )
     ) {
         Row(
@@ -519,7 +533,6 @@ private fun NivelCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Text(
                 text = emoji,
                 style = MaterialTheme.typography.headlineMedium
@@ -530,33 +543,44 @@ private fun NivelCard(
                     .weight(1f)
                     .padding(start = 14.dp)
             ) {
-
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = nome,
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color(0xFF352044)
                     )
 
                     if (atual) {
                         Text(
                             text = " ATUAL",
                             style = MaterialTheme.typography.labelSmall,
-                            color = Color(0xFF8B20C7)
+                            color = Color(0xFF7B1FA2),
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
 
                 Text(
                     text = descricao,
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF493B52)
                 )
 
                 Text(
                     text = xp,
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFF66736D)
+                    color = if (atual) {
+                        Color(0xFF7B1FA2)
+                    } else {
+                        Color(0xFF66736D)
+                    },
+                    fontWeight = if (atual) {
+                        FontWeight.Bold
+                    } else {
+                        FontWeight.Normal
+                    }
                 )
             }
         }
@@ -568,6 +592,7 @@ private fun ConquistaCard(
     emoji: String,
     titulo: String,
     descricao: String,
+    progresso: String,
     desbloqueada: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -580,7 +605,10 @@ private fun ConquistaCard(
                 Color(0xFFE8EEEC)
             }
         ),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 0.dp
+        )
     ) {
         Column(
             modifier = Modifier
@@ -589,7 +617,6 @@ private fun ConquistaCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
             Text(
                 text = emoji,
                 style = MaterialTheme.typography.headlineMedium
@@ -607,12 +634,24 @@ private fun ConquistaCard(
             Text(
                 text = descricao,
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodySmall
             )
 
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = progresso,
+                style = MaterialTheme.typography.labelSmall,
+                color = if (desbloqueada) {
+                    Color(0xFF008A4A)
+                } else {
+                    Color(0xFF66736D)
+                }
+            )
+
             if (desbloqueada) {
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
                     text = "✓ Desbloqueada",
