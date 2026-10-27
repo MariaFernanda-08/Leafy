@@ -517,9 +517,9 @@ private fun NivelCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if (atual) {
-                Color(0xFFE1C4FF) // Roxo para o nível atual
+                Color(0xFFE1C4FF)
             } else {
-                Color(0xFFF0F5F3) // Cor normal dos outros níveis
+                Color(0xFFF0F5F3)
             }
         ),
         shape = RoundedCornerShape(16.dp),
