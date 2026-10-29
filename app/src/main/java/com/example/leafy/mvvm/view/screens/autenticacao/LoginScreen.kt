@@ -260,7 +260,7 @@ fun LoginScreen(
                     )
 
                     TextButton(
-                        onClick = { onCadastroClick }
+                        onClick = { onCadastroClick() }
                     ) {
                         Text(
                             text = "Cadastre-se",

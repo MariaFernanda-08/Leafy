@@ -1,5 +1,10 @@
 package com.example.leafy.mvvm.view.screens.mapa
 
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import android.os.Handler
+import android.os.Looper
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,7 +33,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
@@ -36,21 +44,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import android.content.Intent
-import android.net.Uri
 import android.webkit.JavascriptInterface
+import androidx.compose.runtime.setValue
 
 @Composable
 fun MapaScreen(
     paddingValues: PaddingValues,
     viewModel: PontoColetaViewModel = viewModel()
 ) {
-   val pontos by viewModel.pontos.collectAsState()
-   LaunchedEffect(Unit) {
-       viewModel.buscarPontos()
-   }
+    val pontos by viewModel.pontos.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.buscarPontos()
+    }
 
     val context = LocalContext.current
+
+    var mensagemLocalizacao by remember { mutableStateOf<String?>(null) }
+    var abrirConfiguracoesDoApp by remember { mutableStateOf(false) }
 
     val locationManager =
         context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -130,41 +140,73 @@ fun MapaScreen(
         }
     }
 
-    val permissaoLocalizacao =
-        rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissoes ->
+    val permissaoLocalizacao = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissoes ->
+        val permitida =
+            permissoes[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                    permissoes[Manifest.permission.ACCESS_COARSE_LOCATION] == true
 
-            val permitida =
-                permissoes[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-                        permissoes[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-
-            if (permitida) {
-                iniciarLocalizacao()
+        if (permitida) {
+            val localizacaoAtiva = try {
+                locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                        locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+            } catch (e: Exception) {
+                false
             }
-        }
 
-    LaunchedEffect(Unit) {
-        val temPermissao =
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
-
-        if (temPermissao) {
-            iniciarLocalizacao()
+            if (localizacaoAtiva) {
+                mensagemLocalizacao = null
+                iniciarLocalizacao()
+            } else {
+                abrirConfiguracoesDoApp = false
+                mensagemLocalizacao =
+                    "A localização do dispositivo está desligada. Ative o GPS ou a localização nas configurações para encontrar sua posição no mapa."
+            }
         } else {
+            abrirConfiguracoesDoApp = true
+            mensagemLocalizacao =
+                "Para mostrar sua localização no mapa, permita que o Leafy acesse a localização nas configurações do aplicativo. Os pontos de coleta continuarão disponíveis."
+        }
+    }
+
+    fun verificarLocalizacao() {
+        val temPermissaoFina = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val temPermissaoAproximada = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!temPermissaoFina && !temPermissaoAproximada) {
             permissaoLocalizacao.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 )
             )
+            return
         }
+
+        val localizacaoAtiva = try {
+            locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                    locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        } catch (e: Exception) {
+            false
+        }
+
+        if (!localizacaoAtiva) {
+            abrirConfiguracoesDoApp = false
+            mensagemLocalizacao =
+                "A localização do dispositivo está desligada. Ative o GPS ou a localização nas configurações para encontrar sua posição no mapa. Os pontos de coleta continuam visíveis."
+            return
+        }
+
+        mensagemLocalizacao = null
+        iniciarLocalizacao()
     }
 
     val html = """
@@ -763,7 +805,9 @@ fun MapaScreen(
                         div.title = 'Minha localização';
 
                         div.onclick = function() {
-                            centralizarMinhaLocalizacao();
+                            if (window.Android && Android.solicitarMinhaLocalizacao) {
+                                Android.solicitarMinhaLocalizacao();
+                            }
                         };
 
                         L.DomEvent.disableClickPropagation(div);
@@ -870,10 +914,10 @@ fun MapaScreen(
                                     return 'OK';
                                 })();
                                 """.trimIndent()
-                                                ) { resultado ->
-                                                    android.util.Log.d("LEAFY_MAPA", "Resultado JS: $resultado")
-                                                }
-                                            }
+                            ) { resultado ->
+                                android.util.Log.d("LEAFY_MAPA", "Resultado JS: $resultado")
+                            }
+                        }
 
                         override fun onReceivedError(
                             view: WebView?,
@@ -898,12 +942,21 @@ fun MapaScreen(
                     settings.userAgentString =
                         "Leafy/1.0 Android App"
 
-                    addJavascriptInterface(object{
+                    addJavascriptInterface(object {
                         @JavascriptInterface
-                        fun abrirGoogleMaps(latitude: Double, longitude: Double){
-                            val uri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude")
-                            val intent = Intent(Intent.ACTION_VIEW,uri)
+                        fun abrirGoogleMaps(latitude: Double, longitude: Double) {
+                            val uri = Uri.parse(
+                                "https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude"
+                            )
+                            val intent = Intent(Intent.ACTION_VIEW, uri)
                             context.startActivity(intent)
+                        }
+
+                        @JavascriptInterface
+                        fun solicitarMinhaLocalizacao() {
+                            Handler(Looper.getMainLooper()).post {
+                                verificarLocalizacao()
+                            }
                         }
                     }, "Android")
 
@@ -928,5 +981,89 @@ fun MapaScreen(
                 }
             }
         )
+
+        if (mensagemLocalizacao != null) {
+            AlertDialog(
+                onDismissRequest = {
+                    mensagemLocalizacao = null
+                },
+                shape = RoundedCornerShape(24.dp),
+                containerColor = Color(0xFFFFFFFF),
+                titleContentColor = Color(0xFF17211C),
+                textContentColor = Color(0xFF4F5B55),
+                tonalElevation = 6.dp,
+                title = {
+                    Text(
+                        text = if (abrirConfiguracoesDoApp) {
+                            "Permissão de localização necessária"
+                        } else {
+                            "Localização desativada"
+                        },
+                        color = Color(0xFF17211C),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                },
+                text = {
+                    Text(
+                        text = mensagemLocalizacao.orEmpty(),
+                        color = Color(0xFF4F5B55),
+                        fontSize = 15.sp,
+                        lineHeight = 22.sp
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            val intent = if (abrirConfiguracoesDoApp) {
+                                Intent(
+                                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                ).apply {
+                                    data = Uri.fromParts(
+                                        "package",
+                                        context.packageName,
+                                        null
+                                    )
+                                }
+                            } else {
+                                Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                            }
+
+                            mensagemLocalizacao = null
+                            context.startActivity(intent)
+                        },
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = Color(0xFF2E7D32)
+                        )
+                    ) {
+                        Text(
+                            text = if (abrirConfiguracoesDoApp) {
+                                "Abrir configurações"
+                            } else {
+                                "Ativar localização"
+                            },
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            mensagemLocalizacao = null
+                        },
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = Color(0xFF4F5B55)
+                        )
+                    ) {
+                        Text(
+                            text = "Agora não",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            )
+        }
     }
 }
