@@ -1,1 +1,0 @@
-SELECT * FROM leafy_db.users;
