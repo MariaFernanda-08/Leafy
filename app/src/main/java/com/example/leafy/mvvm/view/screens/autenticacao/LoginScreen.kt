@@ -247,50 +247,6 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(22.dp))
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = Color(0xFFE5E5E5)
-                    )
-
-                    Text(
-                        text = "ou",
-                        modifier = Modifier.padding(horizontal = 12.dp),
-                        color = Color(0xFF999999),
-                        fontSize = 13.sp
-                    )
-
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = Color(0xFFE5E5E5)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Button(
-                    onClick = {
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    shape = RoundedCornerShape(13.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color(0xFF555555)
-                    )
-                ) {
-                    Text(
-                        text = "G   Continuar com Google",
-                        fontSize = 14.sp
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 2.dp),
@@ -304,7 +260,7 @@ fun LoginScreen(
                     )
 
                     TextButton(
-                        onClick = onCadastroClick
+                        onClick = { onCadastroClick }
                     ) {
                         Text(
                             text = "Cadastre-se",
@@ -314,8 +270,9 @@ fun LoginScreen(
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(12.dp))
             }
-            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
