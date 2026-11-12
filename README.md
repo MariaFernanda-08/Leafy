@@ -365,8 +365,7 @@ resultado obtido em cada caso devem ser registrados após a realização dos tes
 | **Dados de Entrada** | Contas com diferentes perfis de acesso. |
 | **Passos de Execução** | 1. Autenticar com cada conta.<br>2. Tentar acessar as funcionalidades administrativas. |
 | **Resultado Esperado** | Somente a conta com as permissões administrativas necessárias pode executar as operações restritas. |
-| **Evidência** | Usuário Normal e Administrador <img width="500" height="auto" alt="pagina iniical" src="https://github.com/user-attachments/assets/49f7e0b6-f480-456a-9b3c-ba8fa53b9531" />
- .|
+| **Evidência** | Usuário Normal e Administrador <img width="500" height="auto" alt="pagina iniical" src="https://github.com/user-attachments/assets/49f7e0b6-f480-456a-9b3c-ba8fa53b9531" /> |
 
 #### Caso de Teste: CT-SEG-02
 
